@@ -20,21 +20,16 @@ With the current version you can:
 * generate an EPUB file containing the index of a given dictionary (e.g., to cope with the lack of a search function on your eReader)
 
 Please note that Penelope needs substantial code refactoring.
-Unfortunately, I no longer have time to do that.
+Many people have asked for PRC/MOBI support.
+Unfortunately, I no longer have time to develop Penelope.
 Please fork and improve.
 
-Many people have asked for PRC/MOBI support.
-Again, I no longer have time to do that.
 
 
-### Important update (2013-04-27)
+### Important updates
 
-Kobo issued a new firmware 2.5.1 (thanks!), which allows you to use unencrypted/unobfuscated dictionaries again, including those produced by Penelope. Some minor bugs in the UI/UX are still present, but at least the custom dictionaries are back!
+* 2014-06-30 I moved Penelope to GitHub, and released it under the MIT License, with the version code v2.0.0.
 
-
-### Update (2013-04-23)
-
-It seems that Kobo, with firmware 2.5.0, requires the dictionaries to be encrypted/obfuscated. Hence, the dictionaries output by Penelope do not longer work on Kobo devices. I contacted Kobo staff via Twitter, and they forwarded the notice to their development team. I hope they will fix the issue with a new firmware release soon. Meanwhile, if you need your custom-made dictionaries, you must stay with or revert to firmware 2.4.0. 
 
 
 ## Usage
@@ -92,11 +87,17 @@ $ python penelope.py --xml     -p foo -f en -t en --output-csv --fs "\t\t" --ls 
 Please have a look at this web page for details:
 http://www.albertopettarin.it/penelope.html
 
-Note: if you want to convert Kobo dictionaries,
-you need to install [MARISA](https://code.google.com/p/marisa-trie/),
-and change the `MARISA_BUILD_PATH` and `MARISA_REVERSE_LOOKUP_PATH` paths
-in `penelope.py` (or `penelope3.py`),
-pointing at the directory where you installed MARISA.
+You need `Python`, either version 2.x or 3.x, installed on your system to run Penelope.
+
+You might need `dictzip` installed in your system to read from/write to StarDict dictionaries.
+
+If you want to read from/write to Kobo format,
+you need a compiled version of [`MARISA`](https://code.google.com/p/marisa-trie/).
+In case, you must modify the value of variables `MARISA_BUILD_PATH` and `MARISA_REVERSE_LOOKUP_PATH`
+in `penelope.py` (Python 2.x) or `penelope3.py` (Python 3.x),
+making it pointing to the `marisa-build` and `marisa-reverse-lookup`
+executables (see the corresponding comments in the source code). 
+
 
 
 ## License
