@@ -92,7 +92,12 @@ $ python penelope.py --xml     -p foo -f en -t en --output-csv --fs "\t\t" --ls 
 Please have a look at this web page for details:
 http://www.albertopettarin.it/penelope.html
 
-Note: if you want to convert Kobo dictionaries, you need [MARISA](https://code.google.com/p/marisa-trie/).
+Note: if you want to convert Kobo dictionaries,
+you need to install [MARISA](https://code.google.com/p/marisa-trie/),
+and change the `MARISA_BUILD_PATH` and `MARISA_REVERSE_LOOKUP_PATH` paths
+in `penelope.py` (or `penelope3.py`),
+pointing at the directory where you installed MARISA.
+
 
 ## License
 
