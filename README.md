@@ -27,12 +27,12 @@ Many people have asked for PRC/MOBI support.
 Again, I no longer have time to do that.
 
 
-### IMPORTANT UPDATE (2013-04-27)
+### Important update (2013-04-27)
 
 Kobo issued a new firmware 2.5.1 (thanks!), which allows you to use unencrypted/unobfuscated dictionaries again, including those produced by Penelope. Some minor bugs in the UI/UX are still present, but at least the custom dictionaries are back!
 
 
-### UPDATE (2013-04-23)
+### Update (2013-04-23)
 
 It seems that Kobo, with firmware 2.5.0, requires the dictionaries to be encrypted/obfuscated. Hence, the dictionaries output by Penelope do not longer work on Kobo devices. I contacted Kobo staff via Twitter, and they forwarded the notice to their development team. I hope they will fix the issue with a new firmware release soon. Meanwhile, if you need your custom-made dictionaries, you must stay with or revert to firmware 2.4.0. 
 
@@ -96,5 +96,5 @@ Many thanks to:
 
 * No support for PRC/MOBI dictionaries 
 * Input files are assumed to be Unicode UTF-8 encoded
-* CWDIR dependent
+* CWD-dependent 
 
