@@ -1,0 +1,4 @@
+<!ELEMENT dictionary (entry)*> 
+<!ELEMENT entry (key, def)>
+<!ELEMENT key (#PCDATA)>
+<!ELEMENT def (#PCDATA)> 

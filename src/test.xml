@@ -1,0 +1,23 @@
+<?xml version = "1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE document SYSTEM "dictionary.dtd"> 
+<dictionary>
+<entry>
+ <key>Odyssey</key>
+ <def>The Odyssey is one of two major ancient Greek epic poems attributed to Homer. It is, in part, a sequel to the Iliad, the other work ascribed to Homer. The poem is fundamental to the modern Western canon, and is the second—the Iliad being the first—extant work of Western literature. It was probably composed near the end of the 8th century BC, somewhere in Ionia, the Greek coastal region of Anatolia.</def>
+</entry>
+<entry>
+ <key>Odysseus</key>
+ <def>Odysseus or Ulysses was a legendary Greek king of Ithaca and the hero of Homer's epic poem the Odyssey.
+     Odysseus also plays a key role in Homer's Iliad and other works in the Epic Cycle.</def>
+</entry>
+<entry>
+ <key>Penelope</key>
+ <def>In Homer's Odyssey, Penelope is the faithful wife of Odysseus, who keeps her suitors at bay in his long absence and is eventually reunited with him.</def>
+</entry>
+
+<entry>
+ <key>Telemachus</key>
+ <def>Telemachus is a figure in Greek mythology, the son of Odysseus and Penelope, and a central character in Homer's Odyssey. The first four books in particular focus on Telemachus' journeys in search of news about his father, who has been away at war.
+     Therefore, they are traditionally accorded the collective title the Telemachy.</def>
+</entry>
+</dictionary>
