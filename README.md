@@ -5,6 +5,7 @@
 * Version: 2.0.0
 * Date: 2014-06-30
 * Developer: [Alberto Pettarin](http://www.albertopettarin.it/) ([contact](http://www.albertopettarin.it/contact.html))
+* License: the MIT License (MIT), see LICENSE.md
 
 With the current version you can:
 
