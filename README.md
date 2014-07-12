@@ -108,6 +108,13 @@ Previous versions, hosted in a [Google Code repo](http://code.google.com/p/penel
 were released under the GNU GPL 3 License.
 
 
+## Limitations and Missing Features 
+
+* No support for PRC/MOBI dictionaries 
+* Input files are assumed to be Unicode UTF-8 encoded
+* CWD-dependent 
+
+
 ## Acknowledgments 
 
 Many thanks to:
@@ -121,10 +128,4 @@ Many thanks to:
 * _Lukas Brückner_ for suggesting escaping `& < >` when outputting in XML format;
 * _Stephan Lichtenhagen_ for suggesting forcing UTF-8 encoding on Python 3.
 
-
-## Limitations and Missing Features 
-
-* No support for PRC/MOBI dictionaries 
-* Input files are assumed to be Unicode UTF-8 encoded
-* CWD-dependent 
-
+[![Analytics](https://ga-beacon.appspot.com/UA-52776738-1/penelope)](http://www.albertopettarin.it)
