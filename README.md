@@ -20,17 +20,11 @@ With the current version you can:
 * define your own collation function when outputting to Bookeen Cybook Odyssey format
 * generate an EPUB file containing the index of a given dictionary (e.g., to cope with the lack of a search function on your eReader)
 
-Please note that Penelope needs substantial code refactoring.
-Many people have asked for PRC/MOBI support.
-Unfortunately, I no longer have time to develop Penelope.
-Please fork and improve.
-
-
 
 ### Important updates
 
+* 2014-07-30 Please note that Penelope needs substantial code refactoring. Many people have asked for PRC/MOBI support. Unfortunately, I no longer have time to develop or maintain Penelope. **Please fork and improve.**
 * 2014-06-30 I moved Penelope to GitHub, and released it under the MIT License, with the version code v2.0.0.
-
 
 
 ## Usage
@@ -85,7 +79,7 @@ $ python penelope.py           -p foo -f en -t en --collation custom_collation.p
 $ python penelope.py --xml     -p foo -f en -t en --output-csv --fs "\t\t" --ls "\n" 
 ```
 
-Please have a look at this web page for details:
+Please have a look at this Web page for details:
 http://www.albertopettarin.it/penelope.html
 
 You need `Python`, either version 2.x or 3.x, installed on your system to run Penelope.
@@ -99,6 +93,25 @@ in `penelope.py` (Python 2.x) or `penelope3.py` (Python 3.x),
 making it pointing to the `marisa-build` and `marisa-reverse-lookup`
 executables (see the corresponding comments in the source code). 
 
+### CSV format
+
+Penelope can read/write CSV-like files:
+
+* one line for each (word, definition) pair
+* each line must end with the same line separator (default: `\n`)
+* each `word` and `definition` must be separated by the same field separator (default: `\t`)
+
+Note that you can change the default line and field separators
+to any arbitrary string, by using the `--ls` and `--fs` switches, respectively.
+The string might contain ASCII escapes, for example `\t\t\t` represents three tab characters.
+
+### XML format
+
+The `XML` format read/written by Penelope is defined by
+[dictionary.dtd](https://github.com/pettarin/penelope/blob/master/src/dictionary.dtd).
+
+See [test.xml](https://github.com/pettarin/penelope/blob/master/src/test.xml)
+for an example.
 
 
 ## License
