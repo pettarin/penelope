@@ -3,13 +3,14 @@
 
 __license__     = 'MIT'
 __author__      = 'Alberto Pettarin (alberto albertopettarin.it)'
-__copyright__   = '2012-2014 Alberto Pettarin (alberto albertopettarin.it)'
-__version__     = 'v2.0.0'
-__date__        = '2014-06-30'
+__copyright__   = '2012-2015 Alberto Pettarin (alberto albertopettarin.it)'
+__version__     = 'v2.0.1'
+__date__        = '2015-01-25'
 __description__ = 'Penelope is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices'
 
 ### BEGIN changelog ###
 #
+# 2.0.1 2015-01-25 Added code for running the script from an arbitrary path
 # 2.0.0 2014-06-30 Moved to GitHub
 # 1.21             Added encoding="utf-8" to Python3 open(..., "w") calls
 # 1.20             Added XML escaping/unescaping via xml.sax.saxutils
@@ -376,7 +377,8 @@ def write_to_odyssey_format(config, data, collation, debug):
       info_filename ] = config
 
     # copy empty.idx into index_filename
-    input_file = open('empty.idx', "rb")
+    script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+    input_file = open(os.path.join(script_dir, 'empty.idx'), "rb")
     output_file = open(index_filename, "wb")
     output_file.write(input_file.read())
     input_file.close()

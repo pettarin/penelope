@@ -2,8 +2,8 @@
 
 **Penelope** is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices.
 
-* Version: 2.0.0
-* Date: 2014-06-30
+* Version: 2.0.1
+* Date: 2015-01-25
 * Developer: [Alberto Pettarin](http://www.albertopettarin.it/) ([contact](http://www.albertopettarin.it/contact.html))
 * License: the MIT License (MIT), see LICENSE.md
 
@@ -126,7 +126,6 @@ were released under the GNU GPL 3 License.
 
 * No support for PRC/MOBI dictionaries 
 * Input files are assumed to be Unicode UTF-8 encoded
-* CWD-dependent 
 
 
 ## Acknowledgments 
@@ -140,6 +139,7 @@ Many thanks to:
 * _branok_ for providing the idea and initial code for German collation function;
 * _pal_ for suggesting passing `-l` switch to `MARISA_BUILD`;
 * _Lukas Brückner_ for suggesting escaping `& < >` when outputting in XML format;
-* _Stephan Lichtenhagen_ for suggesting forcing UTF-8 encoding on Python 3.
+* _Stephan Lichtenhagen_ for suggesting forcing UTF-8 encoding on Python 3;
+* _niconavarrete_ for pointing out the dependency from $CWD (issue #1), solved in v2.0.1.
 
 [![Analytics](https://ga-beacon.appspot.com/UA-52776738-1/penelope)](http://www.albertopettarin.it)
