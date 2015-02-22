@@ -133,7 +133,7 @@ Make sure your eBooks have the proper `dc:language` metadata,
 otherwise the correct dictionary might not be loaded.
 
 
-### Kobo Odyssey Devices
+### Kobo Devices
 
 At the time of this writing (2015-02-22), Kobo devices will load dictionaries
 only if the files have a file name of an official Kobo dictionaries, which are:
