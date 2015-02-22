@@ -114,6 +114,64 @@ See [test.xml](https://github.com/pettarin/penelope/blob/master/src/test.xml)
 for an example.
 
 
+## Installing the Dictionaries
+
+### Bookeen Odyssey Devices
+
+For example, suppose you want to use an IT -> EN dictionary.
+
+1. On your PC, produce/download the IT -> EN dictionary files `it-en.dict` and `it-en.dict.idx`.
+2. Connect your Odyssey device to your PC via the USB cable.
+3. Using your file manager, copy the two files `it-en.dict` and `it-en.dict.idx`
+from your PC into the `Dictionaries/` directory on your Odyssey device.
+4.  Reboot your Odyssey, open a book in Italian and select a word: the definition in English should appear.
+(For this test, select a common word so you are sure it is present in the dictionary!)
+
+Note that the Bookeen dictionary software will select the dictionary
+to use by reading the `dc:language` metadata of your eBook.
+Make sure your eBooks have the proper `dc:language` metadata,
+otherwise the correct dictionary might not be loaded.
+
+
+### Kobo Odyssey Devices
+
+At the time of this writing (2015-02-22), Kobo devices will load dictionaries
+only if the files have a file name of an official Kobo dictionaries, which are:
+
+* `dicthtml.zip` (EN)
+* `dicthtml-de.zip` (DE), `dicthtml-de-en.zip` (DE -> EN), `dicthtml-en-de.zip` (EN -> DE),
+* `dicthtml-es.zip` (ES), `dicthtml-es-en.zip` (ES -> EN), `dicthtml-en-es.zip` (EN -> ES),
+* `dicthtml-fr.zip` (FR), `dicthtml-fr-en.zip` (FR -> EN), `dicthtml-en-fr.zip` (EN -> FR),
+* `dicthtml-it.zip` (IT), `dicthtml-it-en.zip` (IT -> EN), `dicthtml-en-it.zip` (EN -> IT),
+* `dicthtml-nl.zip` (NL)
+* `dicthtml-ja.zip` (JA), `dicthtml-en-ja.zip` (EN -> JA),
+* `dicthtml-pt.zip` (PT), `dicthtml-pt-en.zip` (PT -> EN), `dicthtml-en-pt.zip` (EN -> PT)
+
+(see [this MobileRead thread](http://www.mobileread.com/forums/showthread.php?t=196931))
+
+Hence, if you want to install a custom dictionary produced with Penelope,
+you must choose to overwrite one of the official Kobo dictionaries,
+effectively loosing the possibility of using the latter.
+
+For example, suppose you want to use a Polish dictionary (`dicthtml-pl.zip`),
+while you are not interested in using the official Portuguese one (`dicthtml-pt.zip`).
+
+1. On your PC, produce/download the Polish dictionary `dicthtml-pl.zip`.
+2. In your Kobo device, go to the settings and activate the Portuguese dictionary.
+3. Connect your Kobo device to your PC via the USB cable.
+4. Using your file manager, copy `dicthtml-pl.zip`
+from your PC into the `.kobo/dict/` directory on your Kobo device.
+(Note that `.kobo` is a hidden directory: you might need to enable
+the "show hidden files/directories" setting of your file manager.)
+5. Rename `dicthtml-pl.zip` into `dicthtml-pt.zip`.
+6. Reboot your Kobo, open a book in Polish and select a word: the definition should appear.
+(For this test, select a common word so you are sure it is present in the dictionary!)
+
+You can find a list of custom dictionaries, mostly done with Penelope, in
+[this MobileRead thread](http://www.mobileread.com/forums/showthread.php?t=232883).
+
+
+
 ## License
 
 **Penelope** is released under the MIT License since version 2.0.0 (2014-06-30).
