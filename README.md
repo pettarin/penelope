@@ -167,6 +167,11 @@ the "show hidden files/directories" setting of your file manager.)
 6. Reboot your Kobo, open a book in Polish and select a word: the definition should appear.
 (For this test, select a common word so you are sure it is present in the dictionary!)
 
+Note that if you update the firmware of your Kobo,
+the custom dictionaries might be overwritten with the official ones.
+Hence, keep a backup copy of your custom dictionaries in a safe place,
+e.g. your PC or a SD card.
+
 You can find a list of custom dictionaries, mostly done with Penelope, in
 [this MobileRead thread](http://www.mobileread.com/forums/showthread.php?t=232883).
 
