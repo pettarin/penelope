@@ -4,12 +4,13 @@
 __license__     = 'MIT'
 __author__      = 'Alberto Pettarin (alberto albertopettarin.it)'
 __copyright__   = '2012-2015 Alberto Pettarin (alberto albertopettarin.it)'
-__version__     = 'v2.0.1'
-__date__        = '2015-01-25'
+__version__     = 'v2.0.2'
+__date__        = '2015-04-04'
 __description__ = 'Penelope is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices'
 
 ### BEGIN changelog ###
 #
+# 2.0.2 2015-04-04 Added --merge-definitions, --merge-separator switches, and reading StarDict .syn file
 # 2.0.1 2015-01-25 Added code for running the script from an arbitrary path
 # 2.0.0 2014-06-30 Moved to GitHub
 # 1.21             Added encoding="utf-8" to Python3 open(..., "w") calls
@@ -80,11 +81,11 @@ def collate_function_default(string1, string2):
 
 ### BEGIN read_from_stardict_format ###
 # read_from_stardict_format(idx_input_filename,
-#   dict_input_filename, ignore_case)
+#   dict_input_filename, syn_input_filename, ignore_case)
 # read data from the given stardict dictionary
 # and return a list of [ [word, definition] ]
 # if ignore_case = True, lowercase all the index word
-def read_from_stardict_format(idx_input_filename, dict_input_filename, ignore_case):
+def read_from_stardict_format(idx_input_filename, dict_input_filename, syn_input_filename, ignore_case):
 
     data = []
 
@@ -138,6 +139,47 @@ def read_from_stardict_format(idx_input_filename, dict_input_filename, ignore_ca
 
     idx_input_file.close()
     dict_input_file.close()
+
+    # TODO now we simply replicate the definition for the original word,
+    # associating it to the synonym. In theory we should output a new list
+    # containing the [synonym, original_word] pairs
+    if syn_input_filename != None:
+        original_data_length = len(data)
+        syn_input_file = open(syn_input_filename, "rb")
+        #Python2#        word = ""
+        #Python3#
+        word = b''
+        byte = syn_input_file.read(1)
+        while byte:
+            #Python2#            if (byte == '\0'):
+            #Python3#
+            if (byte == b'\0'):    
+                # end of current word: read idx index of original word 
+                idx = syn_input_file.read(4)
+                idxi = int((struct.unpack('>i', idx))[0])
+
+                # if ignore_case = True, lowercase word
+                #Python3#
+                word = word.decode("utf-8")
+                if ignore_case:
+                    word = word.lower()
+
+                # get the definition for the original word
+                # and append it to current data
+                if idxi < original_data_length:
+                    data += [ [word, data[idxi][1] ] ]
+
+                # reset current word
+                #Python2#                word = ""
+                #Python3#
+                word = b''
+            else:
+                # append current character to current word
+                #Python2#                word += str(byte)
+                #Python3#
+                word += byte
+            byte = syn_input_file.read(1)
+        syn_input_file.close()
 
     return data
 ### END read_from_stardict_format ###
@@ -279,7 +321,7 @@ def read_from_kobo_format(kobo_input_filename, ignore_case):
     fd.write(zfile.read(words_filename))
     fd.close()
     
-    # FIXME is there a better way to extract all the words from a MARISA trie?
+    # TODO is there a better way to extract all the words from a MARISA trie?
     ids = ""
     for i in range(1000000):
         ids += str(i) + "\n"
@@ -1307,7 +1349,7 @@ def compress_install_file(dictionary_filename, index_filename, zip_filename):
 #
 def compress_StarDict_dictionary(dictionary_filename, compressed_dictionary_filename, delete_uncompressed):
 
-    # FIXME compressing with gzip library seems not working, I need to call dictzip
+    # TODO compressing with gzip library seems not working, I need to call dictzip
 
     # compress the dictionary file with dictzip
     print_info("Creating compressed dictionary file " + compressed_dictionary_filename + "...") 
@@ -1358,6 +1400,8 @@ def compress_StarDict_dictionary(dictionary_filename, compressed_dictionary_file
 # --output-csv : output format is CSV
 # --output-epub : output format is epub
 # --collation : collation function to be used while outputting to Bookeen Cybook Odyssey format
+# --merge-definition : merge definitions for the same (index) word
+# --merge-separator : string to be inserted between merged definitions
 def read_command_line_parameters(argv):
 
     try:
@@ -1368,7 +1412,8 @@ def read_command_line_parameters(argv):
                 'sd', 'odyssey', 'xml', 'kobo', 'csv',
                 'output-odyssey', 'output-sd', 'output-xml', 'output-kobo', 'output-csv',
                 'output-epub',
-                'collation='])
+                'collation=',
+                'merge-definitions', 'merge-separator='])
     #Python2#    except getopt.GetoptError, err:
     #Python3#
     except getopt.GetoptError as err:
@@ -1486,10 +1531,19 @@ def read_command_line_parameters(argv):
     else:
         collation_filename = None
 
+    merge_definitions = False
+    if '--merge-definitions' in optdict:
+        merge_definitions = True
+
+    merge_separator = " "
+    if '--merge-separator' in optdict:
+        merge_separator = optdict['--merge-separator']
+
     return [ prefix_list, language_from, language_to,
              license_string, copyright_string, title, description, year,
              debug, ignore_case, parser_filename, create_zip,
-             input_format, output_format, fs, ls, collation_filename ]
+             input_format, output_format, fs, ls, collation_filename,
+             merge_definitions, merge_separator ]
 ### END read_command_line_parameters ###
 
 
@@ -1597,6 +1651,14 @@ def check_dict_file(dict_filename):
 
     return False
 ### END check_dict_file ###
+
+
+### BEGIN check_syn_file ###
+# check_syn_file(syn_filename)
+# checks that syn_filename exists
+def check_syn_file(syn_filename):
+    return os.path.isfile(syn_filename)
+### END check_syn_file ###
 
 
 ### BEGIN check_xml_file ###
@@ -1714,35 +1776,37 @@ def usage():
     print_("$ %s %s -p <prefix list> -f <language_from> -t <language_to> [OPTIONS]" % (e, s))
     print_("")
     print_("Required arguments:")
-    print_(" -p <prefix list>       : list of the dictionaries to be merged/converted (without extension, comma separated)")
-    print_(" -f <language_from>     : ISO 631-2 code language_from of the dictionary to be converted")
-    print_(" -t <language_to>       : ISO 631-2 code language_to of the dictionary to be converted")
+    print_(" -p <prefix list>           : list of the dictionaries to be merged/converted (without extension, comma separated)")
+    print_(" -f <language_from>         : ISO 639-1 code language_from of the dictionary to be converted")
+    print_(" -t <language_to>           : ISO 639-1 code language_to of the dictionary to be converted")
     print_("")
     print_("Optional arguments:")
-    print_(" -d                     : enable debug mode and do not delete temporary files")
-    print_(" -h                     : print this usage message and exit")
-    print_(" -i                     : ignore word case while building the dictionary index")
-    print_(" -z                     : create the .install zip file containing the dictionary and the index")
-    print_(" --sd                   : input dictionary in StarDict format (default)")
-    print_(" --odyssey              : input dictionary in Bookeen Cybook Odyssey format")
-    print_(" --xml                  : input dictionary in XML format")
-    print_(" --kobo                 : input dictionary in Kobo format (reads the index only!)")
-    print_(" --csv                  : input dictionary in CSV format")
-    print_(" --output-odyssey       : output dictionary in Bookeen Cybook Odyssey format (default)")
-    print_(" --output-sd            : output dictionary in StarDict format")
-    print_(" --output-xml           : output dictionary in XML format")
-    print_(" --output-kobo          : output dictionary in Kobo format")
-    print_(" --output-csv           : output dictionary in CSV format")
-    print_(" --output-epub          : output EPUB file containing the index of the input dictionary")
-    print_(" --title <string>       : set the title string shown on the Odyssey screen to <string>")
-    print_(" --license <string>     : set the license string to <string>")
-    print_(" --copyright <string>   : set the copyright string to <string>")
-    print_(" --description <string> : set the description string to <string>")
-    print_(" --year <string>        : set the year string to <string>")
-    print_(" --parser <parser.py>   : use <parser.py> to parse the input dictionary")
-    print_(" --collation <coll.py>  : use <coll.py> as collation function when outputting in Bookeen Cybook Odyssey format")
-    print_(" --fs <string>          : use <string> as CSV field separator, escaping ASCII sequences (default: \\t)")
-    print_(" --ls <string>          : use <string> as CSV line separator, escaping ASCII sequences (default: \\n)")
+    print_(" -d                         : enable debug mode and do not delete temporary files")
+    print_(" -h                         : print this usage message and exit")
+    print_(" -i                         : ignore word case while building the dictionary index")
+    print_(" -z                         : create the .install zip file containing the dictionary and the index")
+    print_(" --sd                       : input dictionary in StarDict format (default)")
+    print_(" --odyssey                  : input dictionary in Bookeen Cybook Odyssey format")
+    print_(" --xml                      : input dictionary in XML format")
+    print_(" --kobo                     : input dictionary in Kobo format (reads the index only!)")
+    print_(" --csv                      : input dictionary in CSV format")
+    print_(" --output-odyssey           : output dictionary in Bookeen Cybook Odyssey format (default)")
+    print_(" --output-sd                : output dictionary in StarDict format")
+    print_(" --output-xml               : output dictionary in XML format")
+    print_(" --output-kobo              : output dictionary in Kobo format")
+    print_(" --output-csv               : output dictionary in CSV format")
+    print_(" --output-epub              : output EPUB file containing the index of the input dictionary")
+    print_(" --merge-definitions        : merge definitions for the same index word")
+    print_(" --merge-separator <string> : use <string> as separator between merged definitions (default: \" \")")
+    print_(" --title <string>           : set the title string shown on the Odyssey screen to <string>")
+    print_(" --license <string>         : set the license string to <string>")
+    print_(" --copyright <string>       : set the copyright string to <string>")
+    print_(" --description <string>     : set the description string to <string>")
+    print_(" --year <string>            : set the year string to <string>")
+    print_(" --parser <parser.py>       : use <parser.py> to parse the input dictionary")
+    print_(" --collation <coll.py>      : use <coll.py> as collation function when outputting in Bookeen Cybook Odyssey format")
+    print_(" --fs <string>              : use <string> as CSV field separator, escaping ASCII sequences (default: \\t)")
+    print_(" --ls <string>              : use <string> as CSV line separator, escaping ASCII sequences (default: \\n)")
     print_("")
     print_("Examples:")
     print_("$ %s %s -h" % (e, s))
@@ -1782,7 +1846,9 @@ def main():
       output_format,
       fs,
       ls,
-      collation_filename ] = read_command_line_parameters(sys.argv)
+      collation_filename,
+      merge_definitions,
+      merge_separator ] = read_command_line_parameters(sys.argv)
 
     type_sequence = 'unknown'
 
@@ -1791,6 +1857,7 @@ def main():
         ifo_input_filename_list = []
         idx_input_filename_list = []
         dict_input_filename_list = []
+        syn_input_filename_list = []
         for prefix in prefix_list:
             # check ifo input file
             ifo_input_filename = prefix + ".ifo"
@@ -1813,6 +1880,16 @@ def main():
             if not readable:
                 print_error("File " + dict_input_filename + " not found (even compressed).")
             dict_input_filename_list.append(dict_input_filename)
+
+            # check syn input file
+            syn_input_filename = prefix + ".syn"
+            readable = check_syn_file(syn_input_filename)
+            if readable:
+                print_info("Input dictionary has a synonym file '" + syn_input_filename + "'.")
+                syn_input_filename_list.append(syn_input_filename)
+            else:
+                print_info("Input dictionary does not have a synonym file.")
+                syn_input_filename_list.append(None)
 
     if input_format == 'xml':
         xml_input_filename_list = []
@@ -2005,7 +2082,8 @@ def main():
         for i in range(len(prefix_list)):
             idx_input_filename = idx_input_filename_list[i]
             dict_input_filename = dict_input_filename_list[i]
-            data += read_from_stardict_format(idx_input_filename, dict_input_filename, ignore_case)
+            syn_input_filename = syn_input_filename_list[i]
+            data += read_from_stardict_format(idx_input_filename, dict_input_filename, syn_input_filename, ignore_case)
 
     if input_format == 'xml':
         for i in range(len(prefix_list)):
@@ -2039,6 +2117,22 @@ def main():
     else:
         print_info("Using the custom parser defined in " + parser_filename + " ...")
         parsed_data = parser.parse(data, type_sequence, ignore_case)
+
+
+    # merge definitions
+    if merge_definitions:
+        print_info('Merging definitions for the same index word...')
+        tmp_data = parsed_data
+        parsed_dict = dict()
+        for pd in tmp_data:
+            word = pd[0]
+            if word in parsed_dict:
+                parsed_dict[word] += merge_separator + pd[4]
+            else:
+                parsed_dict[word] = pd[4]
+        parsed_data = []
+        for w in parsed_dict.keys():
+            parsed_data += [ [ w, True, [], [], parsed_dict[w] ] ]
 
 
     # write out to Odyssey format

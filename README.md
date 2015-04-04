@@ -2,8 +2,8 @@
 
 **Penelope** is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices.
 
-* Version: 2.0.1
-* Date: 2015-01-25
+* Version: 2.0.2
+* Date: 2015-04-04
 * Developer: [Alberto Pettarin](http://www.albertopettarin.it/) ([contact](http://www.albertopettarin.it/contact.html))
 * License: the MIT License (MIT), see LICENSE.md
 
@@ -16,6 +16,7 @@ With the current version you can:
     * XML (R/W)
     * CSV (R/W)
 * merge more dictionaries (of the same type) into a single dictionary
+* merge more definitions for the same index word
 * define your own parser for each word/definition
 * define your own collation function when outputting to Bookeen Cybook Odyssey format
 * generate an EPUB file containing the index of a given dictionary (e.g., to cope with the lack of a search function on your eReader)
@@ -33,36 +34,39 @@ With the current version you can:
 $ python penelope.py -p <prefix list> -f <language_from> -t <language_to> [OPTIONS]
 
 Required arguments:
- -p <prefix list>       : list of the dictionaries to be merged/converted (without extension, comma separated)
- -f <language_from>     : ISO 631-2 code language_from of the dictionary to be converted
- -t <language_to>       : ISO 631-2 code language_to of the dictionary to be converted
+ -p <prefix list>           : list of the dictionaries to be merged/converted (without extension, comma separated)
+ -f <language_from>         : ISO 639-1 code language_from of the dictionary to be converted
+ -t <language_to>           : ISO 639-1 code language_to of the dictionary to be converted
 
 Optional arguments:
- -d                     : enable debug mode and do not delete temporary files
- -h                     : print this usage message and exit
- -i                     : ignore word case while building the dictionary index
- -z                     : create the .install zip file containing the dictionary and the index
- --sd                   : input dictionary in StarDict format (default)
- --odyssey              : input dictionary in Bookeen Cybook Odyssey format
- --xml                  : input dictionary in XML format
- --kobo                 : input dictionary in Kobo format (reads the index only!)
- --csv                  : input dictionary in CSV format
- --output-odyssey       : output dictionary in Bookeen Cybook Odyssey format (default)
- --output-sd            : output dictionary in StarDict format
- --output-xml           : output dictionary in XML format
- --output-kobo          : output dictionary in Kobo format
- --output-csv           : output dictionary in CSV format
- --output-epub          : output EPUB file containing the index of the input dictionary
- --title <string>       : set the title string shown on the Odyssey screen to <string>
- --license <string>     : set the license string to <string>
- --copyright <string>   : set the copyright string to <string>
- --description <string> : set the description string to <string>
- --year <string>        : set the year string to <string>
- --parser <parser.py>   : use <parser.py> to parse the input dictionary
- --collation <coll.py>  : use <coll.py> as collation function when outputting in Bookeen Cybook Odyssey format
- --fs <string>          : use <string> as CSV field separator, escaping ASCII sequences (default: \t)
- --ls <string>          : use <string> as CSV line separator, escaping ASCII sequences (default: \n)
+ -d                         : enable debug mode and do not delete temporary files
+ -h                         : print this usage message and exit
+ -i                         : ignore word case while building the dictionary index
+ -z                         : create the .install zip file containing the dictionary and the index
+ --sd                       : input dictionary in StarDict format (default)
+ --odyssey                  : input dictionary in Bookeen Cybook Odyssey format
+ --xml                      : input dictionary in XML format
+ --kobo                     : input dictionary in Kobo format (reads the index only!)
+ --csv                      : input dictionary in CSV format
+ --output-odyssey           : output dictionary in Bookeen Cybook Odyssey format (default)
+ --output-sd                : output dictionary in StarDict format
+ --output-xml               : output dictionary in XML format
+ --output-kobo              : output dictionary in Kobo format
+ --output-csv               : output dictionary in CSV format
+ --output-epub              : output EPUB file containing the index of the input dictionary
+ --merge-definitions        : merge definitions for the same index word
+ --merge-separator <string> : use <string> as separator between merged definitions (default: " ")
+ --title <string>           : set the title string shown on the Odyssey screen to <string>
+ --license <string>         : set the license string to <string>
+ --copyright <string>       : set the copyright string to <string>
+ --description <string>     : set the description string to <string>
+ --year <string>            : set the year string to <string>
+ --parser <parser.py>       : use <parser.py> to parse the input dictionary
+ --collation <coll.py>      : use <coll.py> as collation function when outputting in Bookeen Cybook Odyssey format
+ --fs <string>              : use <string> as CSV field separator, escaping ASCII sequences (default: \t)
+ --ls <string>              : use <string> as CSV line separator, escaping ASCII sequences (default: \n)
 
+Examples:
 $ python penelope.py -h
 $ python penelope.py           -p foo -f en -t en
 $ python penelope.py           -p bar -f en -t it
@@ -79,8 +83,7 @@ $ python penelope.py           -p foo -f en -t en --collation custom_collation.p
 $ python penelope.py --xml     -p foo -f en -t en --output-csv --fs "\t\t" --ls "\n" 
 ```
 
-Please have a look at this Web page for details:
-http://www.albertopettarin.it/penelope.html
+You can find [ISO 639-1 codes here](http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
 
 You need `Python`, either version 2.x or 3.x, installed on your system to run Penelope.
 
@@ -92,6 +95,9 @@ In case, you must modify the value of variables `MARISA_BUILD_PATH` and `MARISA_
 in `penelope.py` (Python 2.x) or `penelope3.py` (Python 3.x),
 making it pointing to the `marisa-build` and `marisa-reverse-lookup`
 executables (see the corresponding comments in the source code). 
+
+Old Web page about Penelope on my personal Web site:
+http://www.albertopettarin.it/penelope.html
 
 ### CSV format
 
@@ -135,7 +141,7 @@ otherwise the correct dictionary might not be loaded.
 
 ### Kobo Devices
 
-At the time of this writing (2015-02-22), Kobo devices will load dictionaries
+At the time of this writing (2015-04-04), Kobo devices will load dictionaries
 only if the files have a file name of an official Kobo dictionaries, which are:
 
 * `dicthtml.zip` (EN)
@@ -203,6 +209,7 @@ Many thanks to:
 * _pal_ for suggesting passing `-l` switch to `MARISA_BUILD`;
 * _Lukas Brückner_ for suggesting escaping `& < >` when outputting in XML format;
 * _Stephan Lichtenhagen_ for suggesting forcing UTF-8 encoding on Python 3;
-* _niconavarrete_ for pointing out the dependency from $CWD (issue #1), solved in v2.0.1.
+* _niconavarrete_ for pointing out the dependency from $CWD (issue #1), solved in v2.0.1;
+* _elchamaco_ for providing a StarDict dictionary with a `.syn` file for testing.
 
 [![Analytics](https://ga-beacon.appspot.com/UA-52776738-1/penelope)](http://www.albertopettarin.it)

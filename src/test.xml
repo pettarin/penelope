@@ -1,5 +1,5 @@
 <?xml version = "1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE document SYSTEM "dictionary.dtd"> 
+<!DOCTYPE dictionary SYSTEM "dictionary.dtd"> 
 <dictionary>
 <entry>
  <key>Odyssey</key>
@@ -7,8 +7,7 @@
 </entry>
 <entry>
  <key>Odysseus</key>
- <def>Odysseus or Ulysses was a legendary Greek king of Ithaca and the hero of Homer's epic poem the Odyssey.
-     Odysseus also plays a key role in Homer's Iliad and other works in the Epic Cycle.</def>
+ <def>Odysseus or Ulysses was a legendary Greek king of Ithaca and the hero of Homer's epic poem the Odyssey. Odysseus also plays a key role in Homer's Iliad and other works in the Epic Cycle.</def>
 </entry>
 <entry>
  <key>Penelope</key>
@@ -17,7 +16,11 @@
 
 <entry>
  <key>Telemachus</key>
- <def>Telemachus is a figure in Greek mythology, the son of Odysseus and Penelope, and a central character in Homer's Odyssey. The first four books in particular focus on Telemachus' journeys in search of news about his father, who has been away at war.
-     Therefore, they are traditionally accorded the collective title the Telemachy.</def>
+ <def>Telemachus is a figure in Greek mythology, the son of Odysseus and Penelope, and a central character in Homer's Odyssey. The first four books in particular focus on Telemachus' journeys in search of news about his father, who has been away at war. Therefore, they are traditionally accorded the collective title the Telemachy.</def>
+</entry>
+
+<entry>
+ <key>Telemachus</key>
+ <def>Second part of this definition</def>
 </entry>
 </dictionary>
