@@ -2,122 +2,236 @@
 
 **Penelope** is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices.
 
-* Version: 2.0.2
-* Date: 2015-04-04
-* Developer: [Alberto Pettarin](http://www.albertopettarin.it/) ([contact](http://www.albertopettarin.it/contact.html))
-* License: the MIT License (MIT), see LICENSE.md
+* Version: 3.0.0
+* Date: 2015-11-22
+* Developer: [Alberto Pettarin](http://www.albertopettarin.it/)
+* License: the MIT License (MIT)
+* Contact: [click here](http://www.albertopettarin.it/contact.html)
 
 With the current version you can:
 
-* convert a dictionary FROM/TO the following formats:
+* convert a dictionary from/to the following formats:
     * Bookeen Cybook Odyssey (R/W)
+    * CSV (R/W)
+    * EPUB (W only)
+    * MOBI (Kindle, W only)
     * Kobo (R index only, W unencrypted/unobfuscated only)
     * StarDict (R/W)
     * XML (R/W)
-    * CSV (R/W)
-* merge more dictionaries (of the same type) into a single dictionary
-* merge more definitions for the same index word
-* define your own parser for each word/definition
-* define your own collation function when outputting to Bookeen Cybook Odyssey format
-* generate an EPUB file containing the index of a given dictionary (e.g., to cope with the lack of a search function on your eReader)
+* merge several dictionaries of the same type into a single dictionary
+* merge several definitions for the same headword
+* sort by headword and/or by definition
+* define your own input parser to merge/sort/edit definitions
+* define your own collation function (`bookeen` output format only)
+* output an EPUB file containing the dictionary (e.g., to cope with the lack of a search function of your eReader)
+* output a MOBI (Kindle) dictionary
 
 
 ### Important updates
 
-* 2014-07-30 Please note that Penelope needs substantial code refactoring. Many people have asked for PRC/MOBI support. Unfortunately, I no longer have time to develop or maintain Penelope. **Please fork and improve.**
+* 2015-11-22 **The command line interface has changed with v3.0.0**, as I performed a huge code refactoring.
 * 2014-06-30 I moved Penelope to GitHub, and released it under the MIT License, with the version code v2.0.0.
+
+
+## Installation
+
+1. Get the source code:
+
+    * clone this repo with `git`:
+
+        ```bash
+        $ git clone https://github.com/pettarin/penelope.git
+        ```
+
+    * or download the [latest release](https://github.com/pettarin/penelope/releases) and uncompress it somewhere,
+    * or download the [current master ZIP](https://github.com/pettarin/penelope/archive/master.zip) and uncompress it somewhere.
+
+2. Open a console and enter the `penelope` directory:
+
+    ```bash
+    $ cd /path/to/penelope
+    ```
+
+3. That's it! Just run without arguments (or with `-h` or `--help`) to get the manual:
+
+    ```bash
+    $ python penelope.py
+    ```
+
+
+### Dependencies
+
+* Python, version 2.7.x or 3.4.x (or above)
+* to write StarDict dictionaries: the `dictzip` executable, available in your `$PATH` or specified with `--dictzip-path`
+
+    ```bash
+    $ [sudo] apt-get install dictzip
+    ```
+
+* to read/write Kobo dictionaries: the Python module `marisa_trie`
+
+    ```bash
+    $ [sudo] pip install marisa_trie
+    ```
+
+  or [`MARISA`](https://code.google.com/p/marisa-trie/) executables available in your `$PATH` or specified with `--marisa-bin-path`
+* to write MOBI Kindle dictionaries: the [`kindlegen`](https://www.amazon.com/gp/feature.html?docId=1000765211) executable, available in your `$PATH` or specified with `--kindlegen-path`
+* to read/write XML dictionaries: the Python module `lxml`
+
+    ```bash
+    $ [sudo] pip install lxml
+    ```
 
 
 ## Usage
 
 ```
-$ python penelope.py -p <prefix list> -f <language_from> -t <language_to> [OPTIONS]
+usage: 
+  $ python penelope.py -h
+  $ python penelope.py -i INPUT_FILE -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
+  $ python penelope.py -i IN1,IN2[,IN3...] -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
 
-Required arguments:
- -p <prefix list>           : list of the dictionaries to be merged/converted (without extension, comma separated)
- -f <language_from>         : ISO 639-1 code language_from of the dictionary to be converted
- -t <language_to>           : ISO 639-1 code language_to of the dictionary to be converted
+description:
+  Convert dictionary file(s) with file name prefix INPUT_FILE from format INPUT_FORMAT to format OUTPUT_FORMAT, saving it as OUTPUT_FILE.
+  The dictionary is from LANGUAGE_FROM to LANGUAGE_TO, possibly the same.
+  You can merge several dictionaries (with the same format), by providing a list of comma-separated prefixes, as shown by the third synopsis above.
 
-Optional arguments:
- -d                         : enable debug mode and do not delete temporary files
- -h                         : print this usage message and exit
- -i                         : ignore word case while building the dictionary index
- -z                         : create the .install zip file containing the dictionary and the index
- --sd                       : input dictionary in StarDict format (default)
- --odyssey                  : input dictionary in Bookeen Cybook Odyssey format
- --xml                      : input dictionary in XML format
- --kobo                     : input dictionary in Kobo format (reads the index only!)
- --csv                      : input dictionary in CSV format
- --output-odyssey           : output dictionary in Bookeen Cybook Odyssey format (default)
- --output-sd                : output dictionary in StarDict format
- --output-xml               : output dictionary in XML format
- --output-kobo              : output dictionary in Kobo format
- --output-csv               : output dictionary in CSV format
- --output-epub              : output EPUB file containing the index of the input dictionary
- --merge-definitions        : merge definitions for the same index word
- --merge-separator <string> : use <string> as separator between merged definitions (default: " ")
- --title <string>           : set the title string shown on the Odyssey screen to <string>
- --license <string>         : set the license string to <string>
- --copyright <string>       : set the copyright string to <string>
- --description <string>     : set the description string to <string>
- --year <string>            : set the year string to <string>
- --parser <parser.py>       : use <parser.py> to parse the input dictionary
- --collation <coll.py>      : use <coll.py> as collation function when outputting in Bookeen Cybook Odyssey format
- --fs <string>              : use <string> as CSV field separator, escaping ASCII sequences (default: \t)
- --ls <string>              : use <string> as CSV line separator, escaping ASCII sequences (default: \n)
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug           enable debug mode (default: False)
+  -f LANGUAGE_FROM, --language-from LANGUAGE_FROM
+                        from language (ISO 639-1 code)
+  -i INPUT_FILE, --input-file INPUT_FILE
+                        input file name prefix(es). Multiple prefixes must be
+                        comma-separated.
+  -j INPUT_FORMAT, --input-format INPUT_FORMAT
+                        from format (values: bookeen|csv|kobo|stardict|xml)
+  -k, --keep            keep temporary files (default: False)
+  -o OUTPUT_FILE, --output-file OUTPUT_FILE
+                        output file name
+  -p OUTPUT_FORMAT, --output-format OUTPUT_FORMAT
+                        to format (values:
+                        bookeen|csv|epub|kobo|mobi|stardict|xml)
+  -t LANGUAGE_TO, --language-to LANGUAGE_TO
+                        to language (ISO 639-1 code)
+  -v, --version         print version and exit
+  --author AUTHOR       author string
+  --copyright COPYRIGHT
+                        copyright string
+  --cover-path COVER_PATH
+                        path of the cover image file
+  --description DESCRIPTION
+                        description string
+  --email EMAIL         email string
+  --identifier IDENTIFIER
+                        identifier string
+  --license LICENSE     license string
+  --title TITLE         title string
+  --website WEBSITE     website string
+  --year YEAR           year string
+  --bookeen-collation-function BOOKEEN_COLLATION_FUNCTION
+                        use the specified collation function
+  --bookeen-install-file
+                        create *.install file (default: False)
+  --csv-fs CSV_FS       CSV field separator (default: ',')
+  --csv-ignore-first-line
+                        ignore the first line of the input CSV file(s)
+                        (default: False)
+  --csv-ls CSV_LS       CSV line separator (default: '\n')
+  --dictzip-path DICTZIP_PATH
+                        path to dictzip executable
+  --epub-escape-strings
+                        escape HTML strings (default: False)
+  --epub-group-prefix-length EPUB_GROUP_PREFIX_LENGTH
+                        group headwords by prefix of given length (default: 3)
+  --epub-merge-group-size EPUB_MERGE_GROUP_SIZE
+                        merge headword groups with less than this number of
+                        headwords (default: 128)
+  --epub-output-definitions
+                        output definitions in addition to the headwords
+                        (default: False)
+  --flatten-synonyms    flatten synonyms, creating a new entry with
+                        headword=synonym and using the definition of the
+                        original headword (default: False)
+  --input-file-encoding INPUT_FILE_ENCODING
+                        use the specified encoding for reading the raw
+                        contents of input file(s) (default: 'utf-8')
+  --input-parser INPUT_PARSER
+                        use the specified parser function after reading the
+                        raw contents of input file(s)
+  --ignore-case         ignore headword case, all headwords will be lowercased
+                        (default: False)
+  --ignore-synonyms     ignore synonyms, not reading/writing them if present
+                        (default: False)
+  --kindlegen-path KINDLEGEN_PATH
+                        path to kindlegen executable
+  --marisa-bin-path MARISA_BIN_PATH
+                        path to MARISA bin directory
+  --marisa-index-size MARISA_INDEX_SIZE
+                        maximum size of the MARISA index (default: 1000000)
+  --merge-definitions   merge definitions for the same headword (default:
+                        False)
+  --merge-separator MERGE_SEPARATOR
+                        add this string between merged definitions (default: '
+                        | ')
+  --mobi-no-kindlegen   do not run kindlegen, keep .opf and .html files
+                        (default: False)
+  --sd-ignore-sametypesequence
+                        ignore the value of sametypesequence in StarDict .ifo
+                        files (default: False)
+  --sd-no-dictzip       do not compress the .dict file in StarDict files
+                        (default: False)
+  --sort-after          sort after merging/flattening (default: False)
+  --sort-before         sort before merging/flattening (default: False)
+  --sort-by-definition  sort by definition (default: False)
+  --sort-by-headword    sort by headword (default: False)
+  --sort-ignore-case    ignore case when sorting (default: False)
+  --sort-reverse        reverse the sort order (default: False)
 
-Examples:
-$ python penelope.py -h
-$ python penelope.py           -p foo -f en -t en
-$ python penelope.py           -p bar -f en -t it
-$ python penelope.py           -p "bar,foo,zam" -f en -t it
-$ python penelope.py --xml     -p foo -f en -t en
-$ python penelope.py --xml     -p foo -f en -t en --output-sd
-$ python penelope.py           -p bar -f en -t it --output-kobo
-$ python penelope.py           -p bar -f en -t it --output-xml -i
-$ python penelope.py --kobo    -p bar -f it -t it --output-epub
-$ python penelope.py --odyssey -p bar -f en -t en --output-epub
-$ python penelope.py           -p bar -f en -t it --title "My EN->IT dictionary" --year 2012 --license "CC-BY-NC-SA 3.0"
-$ python penelope.py           -p foo -f en -t en --parser foo_parser.py --title "Custom EN dictionary"
-$ python penelope.py           -p foo -f en -t en --collation custom_collation.py
-$ python penelope.py --xml     -p foo -f en -t en --output-csv --fs "\t\t" --ls "\n" 
+examples:
+
+  $ python penelope.py -i dict.csv -j csv -f en -t it -p stardict -o output.zip
+    Convert en->it dictionary dict.csv (in CSV format) into output.zip (in StarDict format)
+
+  $ python penelope.py -i dict.csv -j csv -f en -t it -p stardict -o output.zip --merge-definitions
+    As above, but also merge definitions
+
+  $ python penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword
+    Merge CSV dictionaries d1, d2, and d3 into output.csv, sorting by headword
+
+  $ python penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-ignore-case
+    As above, but ignore case for sorting
+
+  $ python penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-reverse
+    As above, but reverse the order
+
+  $ python penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv
+    Convert en->it dictionary dict.zip (in StarDict format) into output.csv (in CSV format)
+
+  $ python penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv --ignore-synonyms
+    As above, but do not read the .syn synonym file if present
+
+  $ python penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv --flatten-synonyms
+    As above, but flatten synonyms
+
+  $ python penelope.py -i dict.zip -j stardict -f en -t it -p bookeen -o output
+    Convert dict.zip into output.dict.idx and output.dict for Bookeen devices
+
+  $ python penelope.py -i dict.zip -j stardict -f en -t it -p kobo -o dicthtml-en-it
+    Convert dict.zip into dicthtml-en-it.zip for Kobo devices
+
+  $ python penelope.py -i dict.csv -j csv -f en -t it -p mobi -o output.mobi --cover-path mycover.png --title "My English->Italian Dictionary"
+    Convert dict.csv into a MOBI (Kindle) dictionary, using the specified cover image and title
+
+  $ python penelope.py -i dict.xml -j xml -f en -t it -p mobi -o output.epub
+    Convert dict.xml into an EPUB dictionary
+
+  $ python penelope.py -i dict.xml -j xml -f en -t it -p mobi -o output.epub --epub-output-definitions
+    As above, but also output definitions
+  
 ```
 
-You can find [ISO 639-1 codes here](http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
-
-You need `Python`, either version 2.x or 3.x, installed on your system to run Penelope.
-
-You might need `dictzip` installed in your system to read from/write to StarDict dictionaries.
-
-If you want to read from/write to Kobo format,
-you need a compiled version of [`MARISA`](https://code.google.com/p/marisa-trie/).
-In case, you must modify the value of variables `MARISA_BUILD_PATH` and `MARISA_REVERSE_LOOKUP_PATH`
-in `penelope.py` (Python 2.x) or `penelope3.py` (Python 3.x),
-making it pointing to the `marisa-build` and `marisa-reverse-lookup`
-executables (see the corresponding comments in the source code). 
-
-Old Web page about Penelope on my personal Web site:
-http://www.albertopettarin.it/penelope.html
-
-### CSV format
-
-Penelope can read/write CSV-like files:
-
-* one line for each (word, definition) pair
-* each line must end with the same line separator (default: `\n`)
-* each `word` and `definition` must be separated by the same field separator (default: `\t`)
-
-Note that you can change the default line and field separators
-to any arbitrary string, by using the `--ls` and `--fs` switches, respectively.
-The string might contain ASCII escapes, for example `\t\t\t` represents three tab characters.
-
-### XML format
-
-The `XML` format read/written by Penelope is defined by
-[dictionary.dtd](https://github.com/pettarin/penelope/blob/master/src/dictionary.dtd).
-
-See [test.xml](https://github.com/pettarin/penelope/blob/master/src/test.xml)
-for an example.
+You can find ISO 639-1 language codes [here](http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
 
 
 ## Installing the Dictionaries
@@ -141,7 +255,7 @@ otherwise the correct dictionary might not be loaded.
 
 ### Kobo Devices
 
-At the time of this writing (2015-04-04), Kobo devices will load dictionaries
+At the time of this writing (2015-11-21), Kobo devices will load dictionaries
 only if the files have a file name of an official Kobo dictionaries, which are:
 
 * `dicthtml.zip` (EN)
@@ -182,19 +296,23 @@ You can find a list of custom dictionaries, mostly done with Penelope, in
 [this MobileRead thread](http://www.mobileread.com/forums/showthread.php?t=232883).
 
 
-
 ## License
 
 **Penelope** is released under the MIT License since version 2.0.0 (2014-06-30).
 
-Previous versions, hosted in a [Google Code repo](http://code.google.com/p/penelope-dictionary-converter/),
+Previous versions, hosted by
+[Google Code](http://code.google.com/p/penelope-dictionary-converter/),
 were released under the GNU GPL 3 License.
 
 
 ## Limitations and Missing Features 
 
-* No support for PRC/MOBI dictionaries 
-* Input files are assumed to be Unicode UTF-8 encoded
+* Bookeen has no official documentation for its dictionary format (it has been reverse-engineered), YMMV
+* Kobo has no official documentation for its dictionary format (it has been reverse-engineered), YMMV
+* Reading Kobo dictionaries is partially supported (the index is read, the definitions are not, as they are encrypted/obfuscated)
+* Reading EPUB (3) dictionaries is not supported; the writing part needs polishing/refactoring
+* Reading PRC/MOBI (Kindle) dictionaries is not supported
+* There are some limitations on StarDict files that can be read (see comments in `format_stardict.py`)
 
 
 ## Acknowledgments 

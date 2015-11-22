@@ -1,0 +1,17 @@
+*.pyc
+*.pyd
+*.pyo
+*.swp
+penelope.egg-info
+penelope/build
+penelope/__pycache__
+bak
+build
+dist
+docs/build
+tmp
+
+# service scripts
+zzz_*.py
+zzz_*.sh
+
