@@ -84,13 +84,14 @@ This procedure will not any dependencies, see below.
 ### Dependencies
 
 * Python, version 2.7.x or 3.4.x (or above)
-* to write StarDict dictionaries: the `dictzip` executable, available in your `$PATH` or specified with `--dictzip-path`
+
+* to write StarDict dictionaries: the `dictzip` executable, available in your `$PATH` or specified with `--dictzip-path`:
 
     ```bash
     $ [sudo] apt-get install dictzip
     ```
 
-* to read/write Kobo dictionaries: the Python module `marisa-trie`
+* to read/write Kobo dictionaries: the Python module `marisa-trie`:
 
     ```bash
     $ [sudo] pip install marisa-trie
@@ -98,7 +99,8 @@ This procedure will not any dependencies, see below.
 
   or [`MARISA`](https://code.google.com/p/marisa-trie/) executables available in your `$PATH` or specified with `--marisa-bin-path`
 * to write MOBI Kindle dictionaries: the [`kindlegen`](https://www.amazon.com/gp/feature.html?docId=1000765211) executable, available in your `$PATH` or specified with `--kindlegen-path`
-* to read/write XML dictionaries: the Python module `lxml`
+
+* to read/write XML dictionaries: the Python module `lxml`:
 
     ```bash
     $ [sudo] pip install lxml
@@ -109,9 +111,9 @@ This procedure will not any dependencies, see below.
 
 ```
 usage: 
-  $ penelope.py -h
-  $ penelope.py -i INPUT_FILE -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
-  $ penelope.py -i IN1,IN2[,IN3...] -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
+  $ penelope -h
+  $ penelope -i INPUT_FILE -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
+  $ penelope -i IN1,IN2[,IN3...] -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
 
 description:
   Convert dictionary file(s) with file name prefix INPUT_FILE from format INPUT_FORMAT to format OUTPUT_FORMAT, saving it as OUTPUT_FILE.
@@ -212,43 +214,43 @@ optional arguments:
 
 examples:
 
-  $ penelope.py -i dict.csv -j csv -f en -t it -p stardict -o output.zip
+  $ penelope -i dict.csv -j csv -f en -t it -p stardict -o output.zip
     Convert en->it dictionary dict.csv (in CSV format) into output.zip (in StarDict format)
 
-  $ penelope.py -i dict.csv -j csv -f en -t it -p stardict -o output.zip --merge-definitions
+  $ penelope -i dict.csv -j csv -f en -t it -p stardict -o output.zip --merge-definitions
     As above, but also merge definitions
 
-  $ penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword
+  $ penelope -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword
     Merge CSV dictionaries d1, d2, and d3 into output.csv, sorting by headword
 
-  $ penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-ignore-case
+  $ penelope -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-ignore-case
     As above, but ignore case for sorting
 
-  $ penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-reverse
+  $ penelope -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-reverse
     As above, but reverse the order
 
-  $ penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv
+  $ penelope -i dict.zip -j stardict -f en -t it -p csv -o output.csv
     Convert en->it dictionary dict.zip (in StarDict format) into output.csv (in CSV format)
 
-  $ penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv --ignore-synonyms
+  $ penelope -i dict.zip -j stardict -f en -t it -p csv -o output.csv --ignore-synonyms
     As above, but do not read the .syn synonym file if present
 
-  $ penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv --flatten-synonyms
+  $ penelope -i dict.zip -j stardict -f en -t it -p csv -o output.csv --flatten-synonyms
     As above, but flatten synonyms
 
-  $ penelope.py -i dict.zip -j stardict -f en -t it -p bookeen -o output
+  $ penelope -i dict.zip -j stardict -f en -t it -p bookeen -o output
     Convert dict.zip into output.dict.idx and output.dict for Bookeen devices
 
-  $ penelope.py -i dict.zip -j stardict -f en -t it -p kobo -o dicthtml-en-it
+  $ penelope -i dict.zip -j stardict -f en -t it -p kobo -o dicthtml-en-it
     Convert dict.zip into dicthtml-en-it.zip for Kobo devices
 
-  $ penelope.py -i dict.csv -j csv -f en -t it -p mobi -o output.mobi --cover-path mycover.png --title "My English->Italian Dictionary"
+  $ penelope -i dict.csv -j csv -f en -t it -p mobi -o output.mobi --cover-path mycover.png --title "My English->Italian Dictionary"
     Convert dict.csv into a MOBI (Kindle) dictionary, using the specified cover image and title
 
-  $ penelope.py -i dict.xml -j xml -f en -t it -p mobi -o output.epub
+  $ penelope -i dict.xml -j xml -f en -t it -p mobi -o output.epub
     Convert dict.xml into an EPUB dictionary
 
-  $ penelope.py -i dict.xml -j xml -f en -t it -p mobi -o output.epub --epub-output-definitions
+  $ penelope -i dict.xml -j xml -f en -t it -p mobi -o output.epub --epub-output-definitions
     As above, but also output definitions
   
 ```
