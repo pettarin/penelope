@@ -7,22 +7,23 @@ Write MOBI (Kindle) dictionaries.
 It creates a .opf and .html file, and invokes kindlegen to compile it.
 """
 
+from __future__ import absolute_import
 from io import open
 import os
 import subprocess
 
-from utilities import print_debug
-from utilities import print_error
-from utilities import print_info
-from utilities import create_temp_directory
-from utilities import copy_file
-from utilities import delete_directory
-from utilities import rename_file
+from penelope.utilities import print_debug
+from penelope.utilities import print_error
+from penelope.utilities import print_info
+from penelope.utilities import create_temp_directory
+from penelope.utilities import copy_file
+from penelope.utilities import delete_directory
+from penelope.utilities import rename_file
 
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 

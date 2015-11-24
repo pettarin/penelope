@@ -5,6 +5,7 @@
 This file contains a collection of miscellaneous utility functions.
 """
 
+from __future__ import absolute_import
 from __future__ import print_function
 import imp
 import os
@@ -15,7 +16,7 @@ import uuid
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 

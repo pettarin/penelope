@@ -1,0 +1,2 @@
+lxml>=3.0
+marisa-trie>=0.7.2

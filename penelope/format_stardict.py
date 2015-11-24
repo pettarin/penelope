@@ -7,6 +7,7 @@ Read/write StarDict dictionaries.
 To write a StarDict file, the dictzip executable is required.
 """
 
+from __future__ import absolute_import
 from io import open
 import gzip
 import os
@@ -14,16 +15,16 @@ import subprocess
 import struct
 import zipfile
 
-from utilities import create_temp_directory
-from utilities import delete_directory
-from utilities import print_debug
-from utilities import print_error
-from utilities import print_info
+from penelope.utilities import create_temp_directory
+from penelope.utilities import delete_directory
+from penelope.utilities import print_debug
+from penelope.utilities import print_error
+from penelope.utilities import print_info
 
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 

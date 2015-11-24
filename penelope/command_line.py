@@ -5,16 +5,17 @@
 This file contains command line constants and functions.
 """
 
+from __future__ import absolute_import
 import datetime
 import sys
 
-from utilities import get_uuid
-from utilities import print_error
+from penelope.utilities import get_uuid
+from penelope.utilities import print_error
 
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -402,10 +403,10 @@ EXAMPLES = [
 ]
 
 USAGE = u"""
-  $ python %s -h
-  $ python %s -i INPUT_FILE -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
-  $ python %s -i IN1,IN2[,IN3...] -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
-""" % (sys.argv[0], sys.argv[0], sys.argv[0])
+  $ penelope -h
+  $ penelope -i INPUT_FILE -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
+  $ penelope -i IN1,IN2[,IN3...] -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
+"""
 
 DESCRIPTION = u"""description:
   Convert dictionary file(s) with file name prefix INPUT_FILE from format INPUT_FORMAT to format OUTPUT_FORMAT, saving it as OUTPUT_FILE.
@@ -415,7 +416,7 @@ DESCRIPTION = u"""description:
 EPILOG = u"examples:\n"
 for example in EXAMPLES:
     EPILOG += u"\n"
-    EPILOG += u"  $ python %s %s\n" % (sys.argv[0], example["options"])
+    EPILOG += u"  $ penelope %s\n" % (example["options"])
     EPILOG += u"    %s\n" % (example["description"])
 EPILOG += u"  \n"
 

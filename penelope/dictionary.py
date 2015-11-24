@@ -14,16 +14,17 @@ to each entry, and to "flatten them" (i.e., creating new headwords,
 one for each synonym, with the definition of the original entry).
 """
 
+from __future__ import absolute_import
 from io import open
 import os
 
-from utilities import get_uuid
-from utilities import print_error
+from penelope.utilities import get_uuid
+from penelope.utilities import print_error
 
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -55,32 +56,32 @@ def read_dictionary(args):
         # as for the other formats, since we might have a compressed .install file
         # or an uncompressed pair (.dict.idx and .dict)
         # this is dealt with directly in format_bookeen.py
-        import format_bookeen
-        return format_bookeen.read(dictionary, args, args.input_file)
+        import penelope.format_bookeen
+        return penelope.format_bookeen.read(dictionary, args, args.input_file)
     elif input_format == "csv":
         input_file_paths = prepare_file_paths(args.input_file, ".csv")
         if input_file_paths is None:
             return None
-        import format_csv
-        return format_csv.read(dictionary, args, input_file_paths)
+        import penelope.format_csv
+        return penelope.format_csv.read(dictionary, args, input_file_paths)
     elif input_format == "kobo":
         input_file_paths = prepare_file_paths(args.input_file, ".zip")
         if input_file_paths is None:
             return None
-        import format_kobo
-        return format_kobo.read(dictionary, args, input_file_paths)
+        import penelope.format_kobo
+        return penelope.format_kobo.read(dictionary, args, input_file_paths)
     elif input_format == "stardict":
         input_file_paths = prepare_file_paths(args.input_file, ".zip")
         if input_file_paths is None:
             return None
-        import format_stardict
-        return format_stardict.read(dictionary, args, input_file_paths)
+        import penelope.format_stardict
+        return penelope.format_stardict.read(dictionary, args, input_file_paths)
     elif input_format == "xml":
         input_file_paths = prepare_file_paths(args.input_file, ".xml")
         if input_file_paths is None:
             return None
-        import format_xml
-        return format_xml.read(dictionary, args, input_file_paths)
+        import penelope.format_xml
+        return penelope.format_xml.read(dictionary, args, input_file_paths)
     return dictionary
 
 def write_dictionary(dictionary, args):
@@ -96,32 +97,32 @@ def write_dictionary(dictionary, args):
         # as for the other formats, since we might have to generate
         # a compressed .install file or an uncompressed pair (.dict.idx and .dict)
         # this is dealt with directly in format_bookeen.py
-        import format_bookeen
-        return format_bookeen.write(dictionary, args, args.output_file)
+        import penelope.format_bookeen
+        return penelope.format_bookeen.write(dictionary, args, args.output_file)
     elif output_format == "csv":
         output_file_path = add_extension(args.output_file, ".csv")
-        import format_csv
-        return format_csv.write(dictionary, args, output_file_path)
+        import penelope.format_csv
+        return penelope.format_csv.write(dictionary, args, output_file_path)
     elif output_format == "epub":
         output_file_path = add_extension(args.output_file, ".epub")
-        import format_epub
-        return format_epub.write(dictionary, args, output_file_path)
+        import penelope.format_epub
+        return penelope.format_epub.write(dictionary, args, output_file_path)
     elif output_format == "kobo":
         output_file_path = get_kobo_file_path(args)
-        import format_kobo
-        return format_kobo.write(dictionary, args, output_file_path)
+        import penelope.format_kobo
+        return penelope.format_kobo.write(dictionary, args, output_file_path)
     elif output_format == "mobi":
         output_file_path = add_extension(args.output_file, ".mobi")
-        import format_mobi
-        return format_mobi.write(dictionary, args, output_file_path)
+        import penelope.format_mobi
+        return penelope.format_mobi.write(dictionary, args, output_file_path)
     elif output_format == "stardict":
         output_file_path = add_extension(args.output_file, ".zip")
-        import format_stardict
-        return format_stardict.write(dictionary, args, output_file_path)
+        import penelope.format_stardict
+        return penelope.format_stardict.write(dictionary, args, output_file_path)
     elif output_format == "xml":
         output_file_path = add_extension(args.output_file, ".xml")
-        import format_xml
-        return format_xml.write(dictionary, args, output_file_path)
+        import penelope.format_xml
+        return penelope.format_xml.write(dictionary, args, output_file_path)
     return False
 
 def get_kobo_file_path(args):

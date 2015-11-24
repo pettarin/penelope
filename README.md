@@ -2,7 +2,7 @@
 
 **Penelope** is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices.
 
-* Version: 3.0.0
+* Version: 3.0.1
 * Date: 2015-11-22
 * Developer: [Alberto Pettarin](http://www.albertopettarin.it/)
 * License: the MIT License (MIT)
@@ -29,11 +29,31 @@ With the current version you can:
 
 ### Important updates
 
+* 2015-11-24 Penelope is now available on [PyPI](https://pypi.python.org/pypi/penelope/), bumped version to **3.0.1**
 * 2015-11-22 **The command line interface has changed with v3.0.0**, as I performed a huge code refactoring.
 * 2014-06-30 I moved Penelope to GitHub, and released it under the MIT License, with the version code v2.0.0.
 
 
 ## Installation
+
+### Using pip
+
+1. Open a console and type:
+
+    ```bash
+    $ [sudo] pip install penelope
+    ```
+
+2. That's it! Just run without arguments (or with `-h` or `--help`) to get the manual:
+
+    ```bash
+    $ penelope
+    ```
+
+This procedure will install `lxml` and `marisa-trie`.
+You might need to install `dictzip` (StarDict output) and  `kindlegen` (MOBI output) separately, see below.
+
+### From source code
 
 1. Get the source code:
 
@@ -46,7 +66,7 @@ With the current version you can:
     * or download the [latest release](https://github.com/pettarin/penelope/releases) and uncompress it somewhere,
     * or download the [current master ZIP](https://github.com/pettarin/penelope/archive/master.zip) and uncompress it somewhere.
 
-2. Open a console and enter the `penelope` directory:
+2. Open a console and enter the `penelope` (cloned) directory:
 
     ```bash
     $ cd /path/to/penelope
@@ -55,8 +75,10 @@ With the current version you can:
 3. That's it! Just run without arguments (or with `-h` or `--help`) to get the manual:
 
     ```bash
-    $ python penelope.py
+    $ python -m penelope
     ```
+
+This procedure will not any dependencies, see below.
 
 
 ### Dependencies
@@ -68,10 +90,10 @@ With the current version you can:
     $ [sudo] apt-get install dictzip
     ```
 
-* to read/write Kobo dictionaries: the Python module `marisa_trie`
+* to read/write Kobo dictionaries: the Python module `marisa-trie`
 
     ```bash
-    $ [sudo] pip install marisa_trie
+    $ [sudo] pip install marisa-trie
     ```
 
   or [`MARISA`](https://code.google.com/p/marisa-trie/) executables available in your `$PATH` or specified with `--marisa-bin-path`
@@ -87,9 +109,9 @@ With the current version you can:
 
 ```
 usage: 
-  $ python penelope.py -h
-  $ python penelope.py -i INPUT_FILE -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
-  $ python penelope.py -i IN1,IN2[,IN3...] -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
+  $ penelope.py -h
+  $ penelope.py -i INPUT_FILE -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
+  $ penelope.py -i IN1,IN2[,IN3...] -j INPUT_FORMAT -f LANGUAGE_FROM -t LANGUAGE_TO -p OUTPUT_FORMAT -o OUTPUT_FILE [OPTIONS]
 
 description:
   Convert dictionary file(s) with file name prefix INPUT_FILE from format INPUT_FORMAT to format OUTPUT_FORMAT, saving it as OUTPUT_FILE.
@@ -190,43 +212,43 @@ optional arguments:
 
 examples:
 
-  $ python penelope.py -i dict.csv -j csv -f en -t it -p stardict -o output.zip
+  $ penelope.py -i dict.csv -j csv -f en -t it -p stardict -o output.zip
     Convert en->it dictionary dict.csv (in CSV format) into output.zip (in StarDict format)
 
-  $ python penelope.py -i dict.csv -j csv -f en -t it -p stardict -o output.zip --merge-definitions
+  $ penelope.py -i dict.csv -j csv -f en -t it -p stardict -o output.zip --merge-definitions
     As above, but also merge definitions
 
-  $ python penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword
+  $ penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword
     Merge CSV dictionaries d1, d2, and d3 into output.csv, sorting by headword
 
-  $ python penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-ignore-case
+  $ penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-ignore-case
     As above, but ignore case for sorting
 
-  $ python penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-reverse
+  $ penelope.py -i d1,d2,d3 -j csv -f en -t it -p csv -o output.csv --sort-after --sort-by-headword --sort-reverse
     As above, but reverse the order
 
-  $ python penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv
+  $ penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv
     Convert en->it dictionary dict.zip (in StarDict format) into output.csv (in CSV format)
 
-  $ python penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv --ignore-synonyms
+  $ penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv --ignore-synonyms
     As above, but do not read the .syn synonym file if present
 
-  $ python penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv --flatten-synonyms
+  $ penelope.py -i dict.zip -j stardict -f en -t it -p csv -o output.csv --flatten-synonyms
     As above, but flatten synonyms
 
-  $ python penelope.py -i dict.zip -j stardict -f en -t it -p bookeen -o output
+  $ penelope.py -i dict.zip -j stardict -f en -t it -p bookeen -o output
     Convert dict.zip into output.dict.idx and output.dict for Bookeen devices
 
-  $ python penelope.py -i dict.zip -j stardict -f en -t it -p kobo -o dicthtml-en-it
+  $ penelope.py -i dict.zip -j stardict -f en -t it -p kobo -o dicthtml-en-it
     Convert dict.zip into dicthtml-en-it.zip for Kobo devices
 
-  $ python penelope.py -i dict.csv -j csv -f en -t it -p mobi -o output.mobi --cover-path mycover.png --title "My English->Italian Dictionary"
+  $ penelope.py -i dict.csv -j csv -f en -t it -p mobi -o output.mobi --cover-path mycover.png --title "My English->Italian Dictionary"
     Convert dict.csv into a MOBI (Kindle) dictionary, using the specified cover image and title
 
-  $ python penelope.py -i dict.xml -j xml -f en -t it -p mobi -o output.epub
+  $ penelope.py -i dict.xml -j xml -f en -t it -p mobi -o output.epub
     Convert dict.xml into an EPUB dictionary
 
-  $ python penelope.py -i dict.xml -j xml -f en -t it -p mobi -o output.epub --epub-output-definitions
+  $ penelope.py -i dict.xml -j xml -f en -t it -p mobi -o output.epub --epub-output-definitions
     As above, but also output definitions
   
 ```
