@@ -117,11 +117,12 @@ Dependencies
        $ [sudo] pip install marisa-trie
 
 or ```MARISA`` <https://code.google.com/p/marisa-trie/>`__ executables
-available in your ``$PATH`` or specified with ``--marisa-bin-path`` \*
-to write MOBI Kindle dictionaries: the
-```kindlegen`` <https://www.amazon.com/gp/feature.html?docId=1000765211>`__
-executable, available in your ``$PATH`` or specified with
-``--kindlegen-path``
+available in your ``$PATH`` or specified with ``--marisa-bin-path``
+
+-  to write MOBI Kindle dictionaries: the
+   ```kindlegen`` <https://www.amazon.com/gp/feature.html?docId=1000765211>`__
+   executable, available in your ``$PATH`` or specified with
+   ``--kindlegen-path``
 
 -  to read/write XML dictionaries: the Python module ``lxml``:
 

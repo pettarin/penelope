@@ -98,6 +98,7 @@ This procedure will not any dependencies, see below.
     ```
 
   or [`MARISA`](https://code.google.com/p/marisa-trie/) executables available in your `$PATH` or specified with `--marisa-bin-path`
+
 * to write MOBI Kindle dictionaries: the [`kindlegen`](https://www.amazon.com/gp/feature.html?docId=1000765211) executable, available in your `$PATH` or specified with `--kindlegen-path`
 
 * to read/write XML dictionaries: the Python module `lxml`:

@@ -18,7 +18,7 @@ setup(
     name="penelope",
     packages=["penelope"],
     package_data={"penelope": ["res/*"]},
-    version="3.0.1.10",
+    version="3.0.1.11",
     description="Penelope is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices",
     author="Alberto Pettarin",
     author_email="alberto@albertopettarin.it",
