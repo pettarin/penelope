@@ -15,7 +15,7 @@ from penelope.utilities import print_error
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.1"
+__version__ = "3.1.0"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -156,6 +156,12 @@ COMMAND_LINE_PARAMETERS = [
 
     {
         "short": None,
+        "long": "--apply-css",
+        "help": "apply the given CSS file (epub and mobi output only)",
+        "action": "store"
+    },
+    {
+        "short": None,
         "long": "--bookeen-collation-function",
         "help": "use the specified collation function",
         "action": "store"
@@ -192,26 +198,14 @@ COMMAND_LINE_PARAMETERS = [
     },
     {
         "short": None,
-        "long": "--epub-escape-strings",
-        "help": "escape HTML strings (default: False)",
+        "long": "--epub-no-compress",
+        "help": "do not create the compressed container (epub output only, default: False)",
         "action": "store_true"
     },
     {
         "short": None,
-        "long": "--epub-group-prefix-length",
-        "help": "group headwords by prefix of given length (default: 3)",
-        "action": "store"
-    },
-    {
-        "short": None,
-        "long": "--epub-merge-group-size",
-        "help": "merge headword groups with less than this number of headwords (default: 128)",
-        "action": "store"
-    },
-    {
-        "short": None,
-        "long": "--epub-output-definitions",
-        "help": "output definitions in addition to the headwords (default: False)",
+        "long": "--escape-strings",
+        "help": "escape HTML strings (default: False)",
         "action": "store_true"
     },
     {
@@ -222,14 +216,26 @@ COMMAND_LINE_PARAMETERS = [
     },
     {
         "short": None,
-        "long": "--input-file-encoding",
-        "help": "use the specified encoding for reading the raw contents of input file(s) (default: 'utf-8')",
+        "long": "--group-by-prefix-function",
+        "help": "compute the prefix of headwords using the given prefix function file",
         "action": "store"
     },
     {
         "short": None,
-        "long": "--input-parser",
-        "help": "use the specified parser function after reading the raw contents of input file(s)",
+        "long": "--group-by-prefix-length",
+        "help": "group headwords by prefix of given length (default: 2)",
+        "action": "store"
+    },
+    {
+        "short": None,
+        "long": "--group-by-prefix-merge-across-first",
+        "help": "merge headword groups even when the first character changes (default: False)",
+        "action": "store_true"
+    },
+    {
+        "short": None,
+        "long": "--group-by-prefix-merge-min-size",
+        "help": "merge headword groups until the given minimum number of headwords is reached (default: 0, meaning no merge will take place)",
         "action": "store"
     },
     {
@@ -243,6 +249,24 @@ COMMAND_LINE_PARAMETERS = [
         "long": "--ignore-synonyms",
         "help": "ignore synonyms, not reading/writing them if present (default: False)",
         "action": "store_true"
+    },
+    {
+        "short": None,
+        "long": "--include-index-page",
+        "help": "include an index page (epub and mobi output only, default: False)",
+        "action": "store_true"
+    },
+    {
+        "short": None,
+        "long": "--input-file-encoding",
+        "help": "use the specified encoding for reading the raw contents of input file(s) (default: 'utf-8')",
+        "action": "store"
+    },
+    {
+        "short": None,
+        "long": "--input-parser",
+        "help": "use the specified parser function after reading the raw contents of input file(s)",
+        "action": "store"
     },
     {
         "short": None,
@@ -278,6 +302,12 @@ COMMAND_LINE_PARAMETERS = [
         "short": None,
         "long": "--mobi-no-kindlegen",
         "help": "do not run kindlegen, keep .opf and .html files (default: False)",
+        "action": "store_true"
+    },
+    {
+        "short": None,
+        "long": "--no-definitions",
+        "help": "do not output definitions for EPUB and MOBI formats (default: False)",
         "action": "store_true"
     },
     {
@@ -442,6 +472,7 @@ def set_default_values(args):
     def set_default_value(key, value):
         if not args.__contains__(key):
             args.__dict__[key] = value
+    set_default_value("apply_css", None)
     set_default_value("bookeen_collation_function", None)
     set_default_value("bookeen_install_file", False)
     set_default_value("csv_fs", ",")
@@ -449,13 +480,16 @@ def set_default_values(args):
     set_default_value("csv_ls", "\n")
     set_default_value("debug", False)
     set_default_value("dictzip_path", None)
-    set_default_value("epub_escape_strings", False)
-    set_default_value("epub_group_prefix_length", 3)
-    set_default_value("epub_merge_group_size", 100)
-    set_default_value("epub_output_definitions", False)
+    set_default_value("epub_no_compress", False)
+    set_default_value("escape_strings", False)
     set_default_value("flatten_synonyms", False)
+    set_default_value("group_by_prefix_length", 2)
+    set_default_value("group_by_prefix_function", None)
+    set_default_value("group_by_prefix_merge_across_first", False)
+    set_default_value("group_by_prefix_merge_min_size", 0)
     set_default_value("ignore_case", False)
     set_default_value("ignore_synonyms", False)
+    set_default_value("include_index_page", False)
     set_default_value("input_file_encoding", "utf-8")
     set_default_value("input_parser", None)
     set_default_value("keep", False)
@@ -465,6 +499,7 @@ def set_default_values(args):
     set_default_value("merge_definitions", False)
     set_default_value("merge_separator", " | ")
     set_default_value("mobi_no_kindlegen", False)
+    set_default_value("no_definitions", False)
     set_default_value("sd_ignore_sametypesequence", False)
     set_default_value("sd_no_dictzip", False)
     set_default_value("sort_after", False)

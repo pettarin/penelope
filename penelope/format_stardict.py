@@ -24,7 +24,7 @@ from penelope.utilities import print_info
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.1"
+__version__ = "3.1.0"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -267,6 +267,25 @@ def write(dictionary, args, output_file_path):
     # result to be returned
     result = None
 
+    # get absolute path
+    output_file_path_absolute = os.path.abspath(output_file_path)
+
+    # create tmp directory
+    cwd = os.getcwd()
+    tmp_path = create_temp_directory()
+    print_debug("Working in temp dir '%s'" % (tmp_path), args.debug)
+    os.chdir(tmp_path)
+
+    # get the basename and compute output file paths
+    base = os.path.basename(output_file_path)
+    if base.endswith(".zip"):
+        base = base[:-4]
+    ifo_file_path = base + ".ifo"
+    idx_file_path = base + ".idx"
+    dict_file_path = base + ".dict"
+    dict_dz_file_path = base + ".dict.dz"
+    syn_file_path = base + ".syn"
+
     # TODO by spec, the index should be sorted
     # TODO using the comparator stardict_strcmp() defined in the spec
     # TODO (it calls g_ascii_strcasecmp() and/or strcmp() ),
@@ -282,20 +301,6 @@ def write(dictionary, args, output_file_path):
     # should be equivalent for UTF-8 encoded dictionaries (and it is fast)
     #
     dictionary.sort(by_headword=True, ignore_case=True)
-
-    # create tmp directory
-    tmp_path = create_temp_directory()
-    print_debug("Working in temp dir '%s'" % (tmp_path), args.debug)
-
-    # get the basename and compute output file paths
-    base = os.path.basename(output_file_path)
-    if base.endswith(".zip"):
-        base = base[:-4]
-    ifo_file_path = os.path.join(tmp_path, base + ".ifo")
-    idx_file_path = os.path.join(tmp_path, base + ".idx")
-    dict_file_path = os.path.join(tmp_path, base + ".dict")
-    dict_dz_file_path = os.path.join(tmp_path, base + ".dict.dz")
-    syn_file_path = os.path.join(tmp_path, base + ".syn")
 
     # write .idx and .dict files
     print_debug("Writing .idx and .dict files...", args.debug)
@@ -397,23 +402,21 @@ def write(dictionary, args, output_file_path):
         ifo_file_obj.close()
 
         # create output zip file
-        cwd = os.getcwd()
         try:
-            os.chdir(tmp_path)
-            print_debug("Writing to file '%s'..." % (output_file_path), args.debug)
-            file_zip_obj = zipfile.ZipFile(output_file_path, "w", zipfile.ZIP_DEFLATED)
+            print_debug("Writing to file '%s'..." % (output_file_path_absolute), args.debug)
+            file_zip_obj = zipfile.ZipFile(output_file_path_absolute, "w", zipfile.ZIP_DEFLATED)
             for file_to_compress in files_to_compress:
                 file_to_compress = os.path.basename(file_to_compress)
                 file_zip_obj.write(file_to_compress)
                 print_debug("Written %s" % (file_to_compress), args.debug)
             file_zip_obj.close()
             result = [output_file_path]
-            print_debug("Writing to file '%s'... success" % (output_file_path), args.debug)
+            print_debug("Writing to file '%s'... success" % (output_file_path_absolute), args.debug)
         except:
-            print_error("Writing to file '%s'... failure" % (output_file_path))
-        os.chdir(cwd)
+            print_error("Writing to file '%s'... failure" % (output_file_path_absolute))
 
     # delete tmp directory
+    os.chdir(cwd)
     if args.keep:
         print_info("Not deleting temp dir '%s'" % (tmp_path))
     else:

@@ -12,6 +12,7 @@ import os
 import sqlite3
 import zipfile
 
+from penelope.collation_default import collate_function as collate_function_default
 from penelope.utilities import print_debug
 from penelope.utilities import print_error
 from penelope.utilities import print_info
@@ -22,14 +23,13 @@ from penelope.utilities import delete_directory
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.1"
+__version__ = "3.1.0"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
 CHUNK_FILE_PREFIX = "c_"
 CHUNK_SIZE = 262144 # 2^18
-COLLATION_DEFAULT = os.path.join(os.path.split(__file__)[0], "collation_default.py")
-EMPTY_FILE_PATH = os.path.join(os.path.split(__file__)[0], "res/empty.idx")
+EMPTY_FILE_PATH = os.path.join(os.path.split(os.path.abspath(__file__))[0], "res/empty.idx")
 HEADER = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\" [<!ENTITY ns \"&#8226;\">]><html xml:lang=\"%s\" xmlns=\"http://www.w3.org/1999/xhtml\"><head><title></title></head><body>"
 
 def read(dictionary, args, input_file_string):
@@ -166,9 +166,19 @@ def write(dictionary, args, output_file_path):
     # result to be returned
     result = None
 
+    # get absolute path
+    output_file_path_absolute = os.path.abspath(output_file_path)
+
+    # get absolute path for collation function file 
+    bookeen_collation_function_path = None
+    if args.bookeen_collation_function is not None:
+        bookeen_collation_function_path = os.path.abspath(args.bookeen_collation_function)
+
     # create tmp directory
+    cwd = os.getcwd()
     tmp_path = create_temp_directory()
     print_debug("Working in temp dir '%s'" % (tmp_path), args.debug)
+    os.chdir(tmp_path)
 
     # get the basename
     base = os.path.basename(output_file_path)
@@ -176,22 +186,22 @@ def write(dictionary, args, output_file_path):
         base = base[:-4]
 
     # copy empty.idx into tmp_path
-    idx_file_path = os.path.join(tmp_path, base + u".dict.idx")
-    dict_file_path = os.path.join(tmp_path, base + u".dict")
+    idx_file_path = base + u".dict.idx"
+    dict_file_path = base + u".dict"
     copy_file(EMPTY_FILE_PATH, idx_file_path)
 
     # open index
     sql_connection = sqlite3.connect(idx_file_path)
 
     # install collation in the index
-    collation = imp.load_source("", COLLATION_DEFAULT)
-    if args.bookeen_collation_function is not None:
+    collation_function = collate_function_default
+    if bookeen_collation_function_path is not None:
         try:
-            collation = imp.load_source("", args.bookeen_collation_function)
-            print_debug("Using collation function from '%s'" % (args.bookeen_collation_function), args.debug)
+            collation_function = imp.load_source("", bookeen_collation_function_path).collate_function
+            print_debug("Using collation function from '%s'" % (bookeen_collation_function_path), args.debug)
         except:
-            print_error("Unable to load collation function from '%s'. Using the default collation function instead." % (args.bookeen_collation_function))
-    sql_connection.create_collation("IcuNoCase", collation.collate_function)
+            print_error("Unable to load collation function from '%s'. Using the default collation function instead." % (bookeen_collation_function_path))
+    sql_connection.create_collation("IcuNoCase", collation_function)
     sql_connection.text_factory = str
 
     # get a cursor and delete any data from the index file
@@ -204,7 +214,7 @@ def write(dictionary, args, output_file_path):
     files_to_compress = []
     current_offset = 0
     chunk_index = 1
-    chunk_file_path = os.path.join(tmp_path, "%s%d" % (CHUNK_FILE_PREFIX, chunk_index))
+    chunk_file_path = "%s%d" % (CHUNK_FILE_PREFIX, chunk_index)
     files_to_compress.append(chunk_file_path)
     chunk_file_obj = open(chunk_file_path, "wb")
     for entry_index in dictionary.entries_index_sorted:
@@ -226,7 +236,7 @@ def write(dictionary, args, output_file_path):
         if current_offset > CHUNK_SIZE:
             chunk_file_obj.close()
             chunk_index += 1
-            chunk_file_path = os.path.join(tmp_path, "%s%d" % (CHUNK_FILE_PREFIX, chunk_index))
+            chunk_file_path = "%s%d" % (CHUNK_FILE_PREFIX, chunk_index)
             files_to_compress.append(chunk_file_path)
             chunk_file_obj = open(chunk_file_path, "wb")
             current_offset = 0
@@ -235,14 +245,11 @@ def write(dictionary, args, output_file_path):
 
     # compress
     print_debug("Compressing c_* files...", args.debug)
-    cwd = os.getcwd()
-    os.chdir(tmp_path)
     file_zip_obj = zipfile.ZipFile(dict_file_path, "w", zipfile.ZIP_DEFLATED)
     for file_to_compress in files_to_compress:
         file_to_compress = os.path.basename(file_to_compress)
         file_zip_obj.write(file_to_compress)
     file_zip_obj.close()
-    os.chdir(cwd)
     print_debug("Compressing c_* files... done", args.debug)
 
     # update index metadata
@@ -269,18 +276,15 @@ def write(dictionary, args, output_file_path):
     sql_connection.close()
 
     # create .install file or copy .dict.idx and .dict into requested output directory
-    parent_output_directory = os.path.split(output_file_path)[0]
+    parent_output_directory = os.path.split(output_file_path_absolute)[0]
     if args.bookeen_install_file:
         print_debug("Creating .install file...", args.debug)
-        cwd = os.getcwd()
-        os.chdir(tmp_path)
         file_zip_path = os.path.join(parent_output_directory, base + u".install")
         file_zip_obj = zipfile.ZipFile(file_zip_path, "w", zipfile.ZIP_DEFLATED)
         for file_to_compress in [dict_file_path, idx_file_path]:
             file_to_compress = os.path.basename(file_to_compress)
             file_zip_obj.write(file_to_compress)
         file_zip_obj.close()
-        os.chdir(cwd)
         result = [file_zip_path]
         print_debug("Creating .install file... done", args.debug)
     else:
@@ -293,6 +297,7 @@ def write(dictionary, args, output_file_path):
         print_debug("Copying .dict.idx and .dict files... done", args.debug)
 
     # delete tmp directory
+    os.chdir(cwd)
     if args.keep:
         print_info("Not deleting temp dir '%s'" % (tmp_path))
     else:

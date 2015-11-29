@@ -9,7 +9,7 @@ the Webster 1913.
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.1"
+__version__ = "3.1.0"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 

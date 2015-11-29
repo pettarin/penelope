@@ -12,75 +12,22 @@ from io import open
 import os
 import subprocess
 
+from penelope.dictionary_ebook import DictionaryEbook
 from penelope.utilities import print_debug
 from penelope.utilities import print_error
 from penelope.utilities import print_info
 from penelope.utilities import create_temp_directory
 from penelope.utilities import copy_file
 from penelope.utilities import delete_directory
-from penelope.utilities import rename_file
 
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.1"
+__version__ = "3.1.0"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
 KINDLEGEN = u"kindlegen"
-
-HTML_HEADER = u"""<html>
- <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  <title>%s</title>
- </head>
- <body topmargin="0" bottommargin="0" leftmargin="5" rightmargin="5">
-  <center>
-   <hr />
-   <font size="+4">%s</font>
-   <hr />
-  </center>
-  <mbp:pagebreak />
-"""
-
-HTML_FOOTER = u""" </body>
-</html>"""
-
-HTML_WORD = u"""
-  <idx:entry>
-   <h1><idx:orth>%s</idx:orth></h1>
-   <p>%s</p>
-  </idx:entry>
-  <mbp:pagebreak />
-"""
-
-OPF_TEMPLATE = u"""<?xml version="1.0" encoding="utf-8"?>
-<package unique-identifier="uid">
-    <metadata>
-        <dc-metadata xmlns:dc="http://purl.org/metadata/dublin_core" xmlns:oebpackage="http://openebook.org/namespaces/oeb-package/1.0/">
-            <dc:Title>%s</dc:Title>
-            <dc:Language>%s</dc:Language>
-            <dc:Identifier id="uid">%s</dc:Identifier>
-            <dc:Creator>%s</dc:Creator>
-            <dc:Rights>%s</dc:Rights>
-            <dc:Subject BASICCode="REF008000">Dictionaries</dc:Subject>
-        </dc-metadata>
-        <x-metadata>
-            <output encoding="utf-8"></output>
-            <DictionaryInLanguage>%s</DictionaryInLanguage>
-            <DictionaryOutLanguage>%s</DictionaryOutLanguage>
-            <EmbeddedCover>%s</EmbeddedCover>
-        </x-metadata>
-    </metadata>
-    <manifest>
-        <item id="item1" media-type="text/x-oeb1-document" href="words.html"></item>
-    </manifest>
-    <spine>
-        <itemref idref="item1"/>
-    </spine>
-    <tours></tours>
-    <guide></guide>
-</package>"""
 
 def read(dictionary, args, input_file_paths):
     print_error("Read function not implemented for MOBI dictionaries")
@@ -90,67 +37,42 @@ def write(dictionary, args, output_file_path):
     # result to be returned
     result = None
 
+    # get absolute path
+    output_file_path_absolute = os.path.abspath(output_file_path)
+
     # sort by headword, optionally ignoring case
     dictionary.sort(by_headword=True, ignore_case=args.sort_ignore_case)
 
-    # create tmp directory
-    tmp_path = create_temp_directory()
-
-    # get the basename
-    base = os.path.basename(output_file_path)
-    if base.endswith(".mobi"):
-        base = base[:-5]
-    file_mobi_rel_path = base + u".mobi"
-    file_html_path = os.path.join(tmp_path, file_mobi_rel_path)
-
-    # copy cover
-    file_cover_rel_path = u"cover"
-    file_cover_path = os.path.join(tmp_path, file_cover_rel_path)
-    if args.cover_path is not None:
-        if os.path.exists(args.cover_path):
-            file_cover_rel_path = os.path.basename(args.cover_path)
-            file_cover_path = os.path.join(tmp_path, file_cover_rel_path)
-            copy_file(args.cover_path, file_cover_path)
-        else:
-            print_error("Unable to read cover file '%s'" % (args.cover_path))
-    else:
-        print_error("No cover image file specified: generating MOBI without cover")
-        print_error("Use --cover-path to specify a cover image file")
-
-    # TODO split over multiple files?
-    # write .html file
-    print_debug("Writing .html file...", args.debug)
-    file_html_rel_path = u"words.html"
-    file_html_path = os.path.join(tmp_path, file_html_rel_path)
-    file_html_obj = open(file_html_path, "wb")
-    file_html_obj.write((HTML_HEADER % (args.title, args.title)).encode("utf-8"))
-    for index in dictionary.entries_index_sorted:
-        entry = dictionary.entries[index]
-        file_html_obj.write((HTML_WORD % (entry.headword, entry.definition)).encode("utf-8"))
-    file_html_obj.write((HTML_FOOTER).encode("utf-8"))
-    file_html_obj.close()
-    print_debug("Writing .html file... done", args.debug)
-
-    # write .opf file
-    print_debug("Writing .opf file...", args.debug)
-    file_opf_rel_path = base + u".opf"
-    file_opf_path = os.path.join(tmp_path, file_opf_rel_path)
-    file_opf_obj = open(file_opf_path, "wb")
-    opf_content = OPF_TEMPLATE % (
-        args.title,
-        args.language_from,
-        args.identifier,
-        args.author,
-        args.copyright,
-        args.language_from,
-        args.language_to,
-        file_cover_rel_path
+    # create groups
+    special_group, group_keys, group_dict = dictionary.group(
+        prefix_function_path=args.group_by_prefix_function,
+        prefix_length=int(args.group_by_prefix_length),
+        merge_min_size=int(args.group_by_prefix_merge_min_size),
+        merge_across_first=args.group_by_prefix_merge_across_first
     )
-    file_opf_obj.write((opf_content).encode("utf-8"))
-    file_opf_obj.close()
-    print_debug("Writing .opf file... done", args.debug)
+    all_group_keys = group_keys
+    if special_group is not None:
+        all_group_keys += [u"SPECIAL"]
+
+    # create mobi object
+    mobi = DictionaryEbook(ebook_format=DictionaryEbook.MOBI, args=args)
+
+    # add groups
+    for key in all_group_keys:
+        if key == u"SPECIAL":
+            group_entries = special_group
+        else:
+            group_entries = group_dict[key]
+        mobi.add_group(key, group_entries)
+
+    # create output file
+    print_debug("Writing to file '%s'..." % (output_file_path_absolute), args.debug)
+    mobi.write(output_file_path_absolute, compress=False)
+    result = [output_file_path]
+    print_debug("Writing to file '%s'... done" % (output_file_path_absolute), args.debug)
 
     # run kindlegen
+    tmp_path = mobi.get_tmp_path()
     if args.mobi_no_kindlegen:
         print_info("Not running kindlegen, the raw files are located in '%s'" % tmp_path)
         result = [tmp_path]
@@ -158,13 +80,16 @@ def write(dictionary, args, output_file_path):
         try:
             print_debug("Creating .mobi file with kindlegen...", args.debug)
             kindlegen_path = KINDLEGEN
+            opf_file_path_absolute = os.path.join(tmp_path, "OEBPS", "content.opf")
+            mobi_file_path_relative = u"content.mobi"
+            mobi_file_path_absolute = os.path.join(tmp_path, "OEBPS", mobi_file_path_relative)
             if args.kindlegen_path is None:
                 print_info("  Running '%s' from $PATH" % KINDLEGEN)
             else:
                 kindlegen_path = args.kindlegen_path
                 print_info("  Running '%s' from '%s'" % (KINDLEGEN, kindlegen_path))
             proc = subprocess.Popen(
-                [kindlegen_path, file_opf_path, "-o", file_mobi_rel_path],
+                [kindlegen_path, opf_file_path_absolute, "-o", mobi_file_path_relative],
                 stdout=subprocess.PIPE,
                 stdin=subprocess.PIPE,
                 stderr=subprocess.PIPE
@@ -173,7 +98,7 @@ def write(dictionary, args, output_file_path):
             if args.debug:
                 output_unicode = (output[0]).decode("utf-8")
                 print_debug(output_unicode, args.debug)
-            rename_file(file_html_path, output_file_path)
+            copy_file(mobi_file_path_absolute, output_file_path_absolute)
             result = [output_file_path]
             print_debug("Creating .mobi file with kindlegen... done", args.debug)
         except OSError as exc:
@@ -181,14 +106,14 @@ def write(dictionary, args, output_file_path):
             print_error("  Please make sure '%s':" % KINDLEGEN)
             print_error("    1. is available on your $PATH or")
             print_error("    2. specify its path with --kindlegen-path")
-            result = None
 
-        # delete tmp directory
-        if args.keep:
-            print_info("Not deleting temp dir '%s'" % (tmp_path))
-        else:
-            delete_directory(tmp_path)
-            print_debug("Deleted temp dir '%s'" % (tmp_path), args.debug)
+    # delete tmp directory
+    tmp_path = mobi.get_tmp_path()
+    if args.keep:
+        print_info("Not deleting temp dir '%s'" % (tmp_path))
+    else:
+        mobi.delete()
+        print_debug("Deleted temp dir '%s'" % (tmp_path), args.debug)
 
     return result
 

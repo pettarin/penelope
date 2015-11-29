@@ -20,11 +20,13 @@ as executables in your $PATH.
 
 from __future__ import absolute_import
 from io import open
+import imp
 import gzip
 import os
 import subprocess
 import zipfile
 
+from penelope.prefix_kobo import get_prefix as get_prefix_kobo
 from penelope.utilities import create_temp_directory
 from penelope.utilities import create_temp_file
 from penelope.utilities import delete_directory
@@ -37,7 +39,7 @@ from penelope.utilities import rename_file
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.1"
+__version__ = "3.1.0"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -122,56 +124,45 @@ def read(dictionary, args, input_file_paths):
     return dictionary
 
 def write(dictionary, args, output_file_path):
-    def is_allowed(ch):
-        # all non-ascii (x > 127) are ok
-        # all ASCII lowercase letters (97 <= x <= 122) are ok
-        # everything else is not ok
-        code = ord(ch)
-        return (code > 127) or ((code >= 97) and (code <= 122))
-
-    def compute_prefix(headword):
-        # defaults to u"11" if the first two letters of headword are not valid
-        prefix = u"11"
-        headword = headword.lower()
-        if len(headword) > 0:
-            if len(headword) == 1:
-                # for single-letter headwords, append an 'a' at the end
-                # e.g. "9" => "9a"
-                headword += u"a"
-            if is_allowed(headword[0]) and is_allowed(headword[1]):
-                prefix = headword[0:2]
-        return prefix
-
     # result to be returned
     result = None
+
+    # get absolute path
+    output_file_path_absolute = os.path.abspath(output_file_path)
+
+    # create tmp directory
+    cwd = os.getcwd()
+    tmp_path = create_temp_directory()
+    print_debug("Working in temp dir '%s'" % (tmp_path), args.debug)
+    os.chdir(tmp_path)
 
     # sort by headword
     dictionary.sort(by_headword=True)
 
     # group by prefix
     files_to_compress = []
-    prefix_to_file = {}
-    for headword in dictionary.entries_index:
-        prefix = compute_prefix(headword)
-        if not prefix in prefix_to_file:
-            prefix_to_file[prefix] = []
-        prefix_to_file[prefix] += [headword]
-
-    # create tmp directory
-    tmp_path = create_temp_directory()
-    print_debug("Working in temp dir '%s'" % (tmp_path), args.debug)
+    prefix_length = int(args.group_by_prefix_length)
+    special_group, group_keys, group_dict = dictionary.group(
+        prefix_function=get_prefix_kobo,
+        prefix_length=prefix_length,
+        merge_min_size=int(args.group_by_prefix_merge_min_size),
+        merge_across_first=args.group_by_prefix_merge_across_first
+    )
+    if special_group is not None:
+        special_group_key = u"1" * prefix_length
+        group_dict[special_group_key] = special_group
+        group_keys = [special_group_key] + group_keys
 
     # write files
-    for prefix in sorted(prefix_to_file):
+    for key in group_keys:
         # write html file
-        file_html_path = os.path.join(tmp_path, prefix + u".html")
+        file_html_path = key + u".html"
         file_html_obj = open(file_html_path, "wb")
         file_html_obj.write(u"<?xml version=\"1.0\" encoding=\"utf-8\"?><html>".encode("utf-8"))
-        for headword in prefix_to_file[prefix]:
-            entries = dictionary.entries_index[headword]
-            for entry_index in entries:
-                definition = dictionary.entries[entry_index].definition
-                file_html_obj.write((u"<w><a name=\"%s\"/><div><b>%s</b><br/>%s</div></w>" % (headword, headword, definition)).encode("utf-8"))
+        for entry in group_dict[key]:
+            headword = entry.headword
+            definition = entry.definition
+            file_html_obj.write((u"<w><a name=\"%s\"/><div><b>%s</b><br/>%s</div></w>" % (headword, headword, definition)).encode("utf-8"))
         file_html_obj.write((u"</html>").encode("utf-8"))
         file_html_obj.close()
 
@@ -189,8 +180,8 @@ def write(dictionary, args, output_file_path):
         rename_file(file_gz_path, file_html_path)
         files_to_compress.append(file_html_path)
 
-    # TODO write words
-    file_words_path = os.path.join(tmp_path, WORDS_FILE_NAME)
+    # write words
+    file_words_path = WORDS_FILE_NAME
     keys = sorted(dictionary.entries_index.keys())
     try:
         import marisa_trie
@@ -231,22 +222,20 @@ def write(dictionary, args, output_file_path):
         # add file_words_path to files to compress
         files_to_compress.append(file_words_path)
         # create output zip file
-        cwd = os.getcwd()
         try:
-            os.chdir(tmp_path)
-            print_debug("Writing to file '%s'..." % (output_file_path), args.debug)
-            file_zip_obj = zipfile.ZipFile(output_file_path, "w", zipfile.ZIP_DEFLATED)
+            print_debug("Writing to file '%s'..." % (output_file_path_absolute), args.debug)
+            file_zip_obj = zipfile.ZipFile(output_file_path_absolute, "w", zipfile.ZIP_DEFLATED)
             for file_to_compress in files_to_compress:
                 file_to_compress = os.path.basename(file_to_compress)
                 file_zip_obj.write(file_to_compress)
             file_zip_obj.close()
             result = [output_file_path]
-            print_debug("Writing to file '%s'... success" % (output_file_path), args.debug)
+            print_debug("Writing to file '%s'... success" % (output_file_path_absolute), args.debug)
         except:
-            print_error("Writing to file '%s'... failure" % (output_file_path))
-        os.chdir(cwd)
+            print_error("Writing to file '%s'... failure" % (output_file_path_absolute))
 
     # delete tmp directory
+    os.chdir(cwd)
     if args.keep:
         print_info("Not deleting temp dir '%s'" % (tmp_path))
     else:

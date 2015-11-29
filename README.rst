@@ -4,8 +4,8 @@ Penelope
 **Penelope** is a multi-tool for creating, editing and converting
 dictionaries, especially for eReader devices.
 
--  Version: 3.0.1
--  Date: 2015-11-22
+-  Version: 3.1.0
+-  Date: 2015-11-29
 -  Developer: `Alberto Pettarin <http://www.albertopettarin.it/>`__
 -  License: the MIT License (MIT)
 -  Contact: `click here <http://www.albertopettarin.it/contact.html>`__
@@ -96,7 +96,8 @@ From source code
 
        $ python -m penelope
 
-This procedure will not any dependencies, see below.
+This procedure will not install any dependencies: you will need to do
+that manually, see below.
 
 Dependencies
 ~~~~~~~~~~~~
@@ -116,11 +117,11 @@ Dependencies
 
        $ [sudo] pip install marisa-trie
 
-or ```MARISA`` <https://code.google.com/p/marisa-trie/>`__ executables
+or `MARISA <https://code.google.com/p/marisa-trie/>`__ executables
 available in your ``$PATH`` or specified with ``--marisa-bin-path``
 
 -  to write MOBI Kindle dictionaries: the
-   ```kindlegen`` <https://www.amazon.com/gp/feature.html?docId=1000765211>`__
+   `kindlegen <https://www.amazon.com/gp/feature.html?docId=1000765211>`__
    executable, available in your ``$PATH`` or specified with
    ``--kindlegen-path``
 
@@ -178,6 +179,8 @@ Usage
       --title TITLE         title string
       --website WEBSITE     website string
       --year YEAR           year string
+      --apply-css APPLY_CSS
+                            apply the given CSS file (epub and mobi output only)
       --bookeen-collation-function BOOKEEN_COLLATION_FUNCTION
                             use the specified collation function
       --bookeen-install-file
@@ -189,29 +192,36 @@ Usage
       --csv-ls CSV_LS       CSV line separator (default: '\n')
       --dictzip-path DICTZIP_PATH
                             path to dictzip executable
-      --epub-escape-strings
-                            escape HTML strings (default: False)
-      --epub-group-prefix-length EPUB_GROUP_PREFIX_LENGTH
-                            group headwords by prefix of given length (default: 3)
-      --epub-merge-group-size EPUB_MERGE_GROUP_SIZE
-                            merge headword groups with less than this number of
-                            headwords (default: 128)
-      --epub-output-definitions
-                            output definitions in addition to the headwords
-                            (default: False)
+      --epub-no-compress    do not create the compressed container (epub output
+                            only, default: False)
+      --escape-strings      escape HTML strings (default: False)
       --flatten-synonyms    flatten synonyms, creating a new entry with
                             headword=synonym and using the definition of the
                             original headword (default: False)
+      --group-by-prefix-function GROUP_BY_PREFIX_FUNCTION
+                            compute the prefix of headwords using the given prefix
+                            function file
+      --group-by-prefix-length GROUP_BY_PREFIX_LENGTH
+                            group headwords by prefix of given length (default: 2)
+      --group-by-prefix-merge-across-first
+                            merge headword groups even when the first character
+                            changes (default: False)
+      --group-by-prefix-merge-min-size GROUP_BY_PREFIX_MERGE_MIN_SIZE
+                            merge headword groups until the given minimum number
+                            of headwords is reached (default: 0, meaning no merge
+                            will take place)
+      --ignore-case         ignore headword case, all headwords will be lowercased
+                            (default: False)
+      --ignore-synonyms     ignore synonyms, not reading/writing them if present
+                            (default: False)
+      --include-index-page  include an index page (epub and mobi output only,
+                            default: False)
       --input-file-encoding INPUT_FILE_ENCODING
                             use the specified encoding for reading the raw
                             contents of input file(s) (default: 'utf-8')
       --input-parser INPUT_PARSER
                             use the specified parser function after reading the
                             raw contents of input file(s)
-      --ignore-case         ignore headword case, all headwords will be lowercased
-                            (default: False)
-      --ignore-synonyms     ignore synonyms, not reading/writing them if present
-                            (default: False)
       --kindlegen-path KINDLEGEN_PATH
                             path to kindlegen executable
       --marisa-bin-path MARISA_BIN_PATH
@@ -224,6 +234,8 @@ Usage
                             add this string between merged definitions (default: '
                             | ')
       --mobi-no-kindlegen   do not run kindlegen, keep .opf and .html files
+                            (default: False)
+      --no-definitions      do not output definitions for EPUB and MOBI formats
                             (default: False)
       --sd-ignore-sametypesequence
                             ignore the value of sametypesequence in StarDict .ifo
@@ -277,7 +289,6 @@ Usage
 
       $ penelope -i dict.xml -j xml -f en -t it -p mobi -o output.epub --epub-output-definitions
         As above, but also output definitions
-      
 
 You can find ISO 639-1 language codes
 `here <http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>`__.
@@ -384,6 +395,8 @@ Limitations and Missing Features
 -  Reading PRC/MOBI (Kindle) dictionaries is not supported
 -  There are some limitations on StarDict files that can be read (see
    comments in ``format_stardict.py``)
+-  Documentation is not complete
+-  Unit tests are missing
 
 Acknowledgments
 ---------------

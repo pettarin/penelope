@@ -16,15 +16,17 @@ one for each synonym, with the definition of the original entry).
 
 from __future__ import absolute_import
 from io import open
+import imp
 import os
 
+from penelope.prefix_default import get_prefix as get_prefix_default
 from penelope.utilities import get_uuid
 from penelope.utilities import print_error
 
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.0.1"
+__version__ = "3.1.0"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -424,6 +426,96 @@ Has synonyms:               %s
 
         # not needed, since we called self.clear()
         #self.sort(False, False, False, False)
+
+    def group(
+            self,
+            prefix_function=None,
+            prefix_function_path=None,
+            prefix_length=2,
+            merge_min_size=0,
+            merge_across_first=False
+    ):
+        """
+        Group headwords by prefix, returning a dictionary containing
+        the prefixes as keys (possibly, with a "SPECIAL" key) and
+        the dictionary entries as elements of the list associated with a key.
+
+        :param prefix_function_path: the path to a source file containing
+                                a get_prefix function, mapping a headword
+                                and the prefix_length to the prefix;
+                                if None, a default function will be used
+        :type  prefix_function_path: path
+        :param prefix_function: the function, mapping a headword
+                                and the prefix_length to the prefix;
+                                if None, a default function will be used
+        :type  prefix_function: function
+        :param prefix_length: the lenght of the prefixes
+        :type  prefix_length: int
+        :param merge_min_size: merge headword groups until the given minimum
+                               number of headwords is reached; if 0, does not merge
+        :type  merge_min_size: int
+        :param merge_across_first: if True, merge groups even when
+                             the first character changes
+        :type  merge_across_first: False
+        :rtype: (list, list, dict)
+        """
+        def return_triple(groups):
+            """
+            Return a (list_special, list, dict),
+            where the list contains the sorted keys of dict,
+            and list_special contains the list of SPECIAL entries.
+            """
+            spec = None
+            if u"SPECIAL" in groups:
+                spec = groups[u"SPECIAL"]
+                del groups[u"SPECIAL"]
+            keys = sorted(groups.keys())
+            return (spec, keys, groups)
+
+        # load the prefix function
+        get_prefix = get_prefix_default
+        if prefix_function is not None:
+            get_prefix = prefix_function
+        elif prefix_function_path is not None:
+            try:
+                get_prefix = imp.load_source("", prefix_function).get_prefix
+            except:
+                pass
+
+        # create groups
+        raw_groups = {}
+        for index in self.entries_index_sorted:
+            entry = self.entries[index]
+            prefix = get_prefix(entry.headword, prefix_length)
+            if not prefix in raw_groups:
+                raw_groups[prefix] = []
+            raw_groups[prefix].append(self.entries[index])
+
+        # if no merge is requested, return
+        if merge_min_size == 0:
+            return return_triple(raw_groups)
+
+        # merge small groups
+        merged_groups = {}
+        if u"SPECIAL" in raw_groups:
+            # special is never merged
+            merged_groups[u"SPECIAL"] = raw_groups[u"SPECIAL"]
+            del raw_groups[u"SPECIAL"]
+        keys = sorted(raw_groups.keys())
+        accumulator_key = keys[0]
+        accumulator = raw_groups[accumulator_key]
+        for key in keys[1:]:
+            if (
+                    (len(accumulator) >= merge_min_size) or
+                    ((not merge_across_first) and (key[0] != accumulator_key[0]))
+                ):
+                merged_groups[accumulator_key] = accumulator
+                accumulator_key = key
+                accumulator = raw_groups[accumulator_key]
+            else:
+                accumulator += raw_groups[key]
+        merged_groups[accumulator_key] = accumulator
+        return return_triple(merged_groups)
 
 
 
