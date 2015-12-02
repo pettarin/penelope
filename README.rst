@@ -4,8 +4,8 @@ Penelope
 **Penelope** is a multi-tool for creating, editing and converting
 dictionaries, especially for eReader devices.
 
--  Version: 3.1.0
--  Date: 2015-11-29
+-  Version: 3.1.1
+-  Date: 2015-12-02
 -  Developer: `Alberto Pettarin <http://www.albertopettarin.it/>`__
 -  License: the MIT License (MIT)
 -  Contact: `click here <http://www.albertopettarin.it/contact.html>`__
@@ -319,7 +319,7 @@ correct dictionary might not be loaded.
 Kobo Devices
 ~~~~~~~~~~~~
 
-At the time of this writing (2015-11-21), Kobo devices will load
+At the time of this writing (2015-12-02), Kobo devices will load
 dictionaries only if the files have a file name of an official Kobo
 dictionaries, which are:
 
@@ -421,8 +421,3 @@ Many thanks to:
    solved in v2.0.1;
 -  *elchamaco* for providing a StarDict dictionary with a ``.syn`` file
    for testing.
-
-|Analytics|
-
-.. |Analytics| image:: https://ga-beacon.appspot.com/UA-52776738-1/penelope
-   :target: http://www.albertopettarin.it

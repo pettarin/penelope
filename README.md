@@ -2,8 +2,8 @@
 
 **Penelope** is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices.
 
-* Version: 3.1.0
-* Date: 2015-11-29
+* Version: 3.1.1
+* Date: 2015-12-02
 * Developer: [Alberto Pettarin](http://www.albertopettarin.it/)
 * License: the MIT License (MIT)
 * Contact: [click here](http://www.albertopettarin.it/contact.html)
@@ -290,7 +290,7 @@ otherwise the correct dictionary might not be loaded.
 
 ### Kobo Devices
 
-At the time of this writing (2015-11-21), Kobo devices will load dictionaries
+At the time of this writing (2015-12-02), Kobo devices will load dictionaries
 only if the files have a file name of an official Kobo dictionaries, which are:
 
 * `dicthtml.zip` (EN)
@@ -367,4 +367,5 @@ Many thanks to:
 * _niconavarrete_ for pointing out the dependency from $CWD (issue #1), solved in v2.0.1;
 * _elchamaco_ for providing a StarDict dictionary with a `.syn` file for testing.
 
-[![Analytics](https://ga-beacon.appspot.com/UA-52776738-1/penelope)](http://www.albertopettarin.it)
+
+

@@ -11,14 +11,14 @@ from io import open
 import imp
 import os
 import shutil
+import stat
 import tempfile
 import uuid
-import zipfile
 
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.0"
+__version__ = "3.1.1"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -98,11 +98,21 @@ def delete_directory(path):
     :param path: the file path
     :type  path: string (path)
     """
-    if path is not None:
+    def remove_readonly(func, path, _):
+        """
+        Clear the readonly bit and reattempt the removal
+
+        Adapted from https://docs.python.org/3.5/library/shutil.html#rmtree-example
+
+        See also http://stackoverflow.com/questions/2656322/python-shutil-rmtree-fails-on-windows-with-access-is-denied
+        """
         try:
-            shutil.rmtree(path)
+            os.chmod(path, stat.S_IWRITE)
+            func(path)
         except:
             pass
+    if path is not None:
+        shutil.rmtree(path, onerror=remove_readonly)
 
 
 
