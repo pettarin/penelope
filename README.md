@@ -352,6 +352,11 @@ were released under the GNU GPL 3 License.
 * Unit tests are missing
 
 
+## Sponsors
+
+* **December 2015**: [IngleseXpress.it](http://IngleseXpress.it), "Grazie per averci aiutato a pubblicare per Kindle il [Dizionario Inglese-Italiano della Pronuncia Scritta Semplificata](http://www.amazon.it/Dizionario-Inglese-Italiano-Pronuncia-Scritta-Semplificata-ebook/dp/B019BE5WVW)!"
+
+
 ## Acknowledgments 
 
 Many thanks to:
