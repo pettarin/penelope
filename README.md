@@ -2,8 +2,8 @@
 
 **Penelope** is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices.
 
-* Version: 3.1.1
-* Date: 2015-12-02
+* Version: 3.1.2
+* Date: 2016-02-16
 * Developer: [Alberto Pettarin](http://www.albertopettarin.it/)
 * License: the MIT License (MIT)
 * Contact: [click here](http://www.albertopettarin.it/contact.html)
@@ -31,7 +31,6 @@ With the current version you can:
 
 * 2015-11-24 Penelope is now available on [PyPI](https://pypi.python.org/pypi/penelope/), bumped version to **3.0.1**
 * 2015-11-22 **The command line interface has changed with v3.0.0**, as I performed a huge code refactoring.
-* 2014-06-30 I moved Penelope to GitHub, and released it under the MIT License, with the version code v2.0.0.
 
 
 ## Installation
@@ -290,7 +289,7 @@ otherwise the correct dictionary might not be loaded.
 
 ### Kobo Devices
 
-At the time of this writing (2015-12-02), Kobo devices will load dictionaries
+At the time of this writing (2016-02-16), Kobo devices will load dictionaries
 only if the files have a file name of an official Kobo dictionaries, which are:
 
 * `dicthtml.zip` (EN)

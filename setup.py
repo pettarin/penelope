@@ -8,9 +8,9 @@ Set penelope package up
 from setuptools import setup, Extension
 
 __author__ = "Alberto Pettarin"
-__copyright__ = "Copyright 2012-2015, Alberto Pettarin (www.albertopettarin.it)"
+__copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.1"
+__version__ = "3.1.2"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -18,7 +18,7 @@ setup(
     name="penelope",
     packages=["penelope"],
     package_data={"penelope": ["res/*"]},
-    version="3.1.1.1",
+    version="3.1.2.0",
     description="Penelope is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices",
     author="Alberto Pettarin",
     author_email="alberto@albertopettarin.it",

@@ -4,8 +4,8 @@ Penelope
 **Penelope** is a multi-tool for creating, editing and converting
 dictionaries, especially for eReader devices.
 
--  Version: 3.1.1
--  Date: 2015-12-02
+-  Version: 3.1.2
+-  Date: 2016-02-16
 -  Developer: `Alberto Pettarin <http://www.albertopettarin.it/>`__
 -  License: the MIT License (MIT)
 -  Contact: `click here <http://www.albertopettarin.it/contact.html>`__
@@ -39,8 +39,6 @@ Important updates
    **3.0.1**
 -  2015-11-22 **The command line interface has changed with v3.0.0**, as
    I performed a huge code refactoring.
--  2014-06-30 I moved Penelope to GitHub, and released it under the MIT
-   License, with the version code v2.0.0.
 
 Installation
 ------------
@@ -319,7 +317,7 @@ correct dictionary might not be loaded.
 Kobo Devices
 ~~~~~~~~~~~~
 
-At the time of this writing (2015-12-02), Kobo devices will load
+At the time of this writing (2016-02-16), Kobo devices will load
 dictionaries only if the files have a file name of an official Kobo
 dictionaries, which are:
 
@@ -397,6 +395,14 @@ Limitations and Missing Features
    comments in ``format_stardict.py``)
 -  Documentation is not complete
 -  Unit tests are missing
+
+Sponsors
+--------
+
+-  **December 2015**: `IngleseXpress.it <http://IngleseXpress.it>`__,
+   "Grazie per averci aiutato a pubblicare per Kindle il `Dizionario
+   Inglese-Italiano della Pronuncia Scritta
+   Semplificata <http://www.amazon.it/Dizionario-Inglese-Italiano-Pronuncia-Scritta-Semplificata-ebook/dp/B019BE5WVW>`__!"
 
 Acknowledgments
 ---------------
