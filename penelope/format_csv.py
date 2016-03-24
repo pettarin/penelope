@@ -8,6 +8,8 @@ Read/write CSV dictionaries.
 from __future__ import absolute_import
 from io import open
 
+import csv
+
 from penelope.utilities import print_debug
 from penelope.utilities import print_error
 
@@ -39,18 +41,19 @@ def read(dictionary, args, input_file_paths):
     csv_ls = escape(args.csv_ls)
     for input_file_path in input_file_paths:
         print_debug("Reading from file '%s'..." % (input_file_path), args.debug)
-        input_file_object = open(input_file_path, "rb")
-        data_bytes = input_file_object.read() # bytes
-        data_unicode = data_bytes.decode(args.input_file_encoding) # unicode
-        input_file_object.close()
-        lines = data_unicode.split(csv_ls)
-        if args.csv_ignore_first_line:
-            lines = lines[1:]
-        for line in lines:
-            array = line.split(csv_fs)
-            if len(array) >= 2:
-                headword = array[0]
-                definition = line[len(headword) + 1:]
+        with open(input_file_path, "rb") as input_file_object:
+            input_file_reader = csv.reader(
+                input_file_object,
+                dialect='excel',
+            )
+            if args.csv_ignore_first_line:
+                input_file_reader.next()
+            for row in input_file_reader:
+                if len(row) < 2:
+                    print_error("invalid csv row: %r"%row)
+                    continue
+                headword = row[0].decode("utf-8")
+                definition = row[1].decode("utf-8")
                 if args.ignore_case:
                     headword = headword.lower()
                 dictionary.add_entry(headword=headword, definition=definition)
