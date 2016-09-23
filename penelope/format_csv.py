@@ -6,7 +6,7 @@ Read/write CSV dictionaries.
 """
 
 from __future__ import absolute_import
-from io import open
+import io
 
 from penelope.utilities import print_debug
 from penelope.utilities import print_error
@@ -14,7 +14,7 @@ from penelope.utilities import print_error
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -28,20 +28,23 @@ ASCII_ESCAPES = [
     ("\\r", "\r")
 ]
 
+
 def escape(string):
     ret = string
     for s, r in ASCII_ESCAPES:
         ret = ret.replace(s, r)
     return ret
 
+
+# TODO should use csv module instead
 def read(dictionary, args, input_file_paths):
     csv_fs = escape(args.csv_fs)
     csv_ls = escape(args.csv_ls)
     for input_file_path in input_file_paths:
         print_debug("Reading from file '%s'..." % (input_file_path), args.debug)
-        input_file_object = open(input_file_path, "rb")
-        data_bytes = input_file_object.read() # bytes
-        data_unicode = data_bytes.decode(args.input_file_encoding) # unicode
+        input_file_object = io.open(input_file_path, "rb")
+        data_bytes = input_file_object.read()                       # bytes
+        data_unicode = data_bytes.decode(args.input_file_encoding)  # unicode
         input_file_object.close()
         lines = data_unicode.split(csv_ls)
         if args.csv_ignore_first_line:
@@ -57,12 +60,13 @@ def read(dictionary, args, input_file_paths):
         print_debug("Reading from file '%s'... success" % (input_file_path), args.debug)
     return dictionary
 
+
 def write(dictionary, args, output_file_path):
     csv_fs = escape(args.csv_fs)
     csv_ls = escape(args.csv_ls)
     try:
         print_debug("Writing to file '%s'..." % (output_file_path), args.debug)
-        output_file_obj = open(output_file_path, "wb")
+        output_file_obj = io.open(output_file_path, "wb")
         for index in dictionary.entries_index_sorted:
             entry = dictionary.entries[index]
             string = u"%s%s%s%s" % (
@@ -78,6 +82,3 @@ def write(dictionary, args, output_file_path):
     except:
         print_error("Writing to file '%s'... failure" % (output_file_path))
         return None
-
-
-

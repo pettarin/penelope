@@ -2,8 +2,8 @@
 
 **Penelope** is a multi-tool for creating, editing and converting dictionaries, especially for eReader devices.
 
-* Version: 3.1.2
-* Date: 2016-02-16
+* Version: 3.1.3
+* Date: 2016-09-23
 * Developer: [Alberto Pettarin](http://www.albertopettarin.it/)
 * License: the MIT License (MIT)
 * Contact: [click here](http://www.albertopettarin.it/contact.html)
@@ -377,6 +377,3 @@ Many thanks to:
 * _Stephan Lichtenhagen_ for suggesting forcing UTF-8 encoding on Python 3;
 * _niconavarrete_ for pointing out the dependency from $CWD (issue #1), solved in v2.0.1;
 * _elchamaco_ for providing a StarDict dictionary with a `.syn` file for testing.
-
-
-

@@ -15,7 +15,7 @@ from penelope.utilities import print_error
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
@@ -370,14 +370,14 @@ REQUIRED_PARAMETERS = [
 ]
 
 EXAMPLES = [
-    #{
-    #    "options": "-h",
-    #    "description": "Print this message and exit"
-    #},
-    #{
-    #    "options": "-v",
-    #    "description": "Print the version and exit"
-    #},
+    # {
+    #     "options": "-h",
+    #     "description": "Print this message and exit"
+    # },
+    # {
+    #     "options": "-v",
+    #     "description": "Print the version and exit"
+    # },
     {
         "options": "-i dict.csv -j csv -f en -t it -p stardict -o output.zip",
         "description": "Convert en->it dictionary dict.csv (in CSV format) into output.zip (in StarDict format)"
@@ -450,6 +450,7 @@ for example in EXAMPLES:
     EPILOG += u"    %s\n" % (example["description"])
 EPILOG += u"  \n"
 
+
 def check_arguments(args):
     """
     Check that we have all the required command line arguments,
@@ -467,6 +468,7 @@ def check_arguments(args):
         print_error("Format '%s' is not a valid output format" % args.output_format)
         print_error("Valid output formats: %s" % OUTPUT_FORMATS)
         sys.exit(4)
+
 
 def set_default_values(args):
     def set_default_value(key, value):
@@ -519,6 +521,3 @@ def set_default_values(args):
     set_default_value("title", u"Dictionary %s to %s" % (args.language_from, args.language_to))
     set_default_value("website", u"https://goo.gl/EB5XSR")
     set_default_value("year", str(datetime.datetime.now().year))
-
-
-

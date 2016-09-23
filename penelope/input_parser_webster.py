@@ -9,9 +9,10 @@ the Webster 1913.
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
+
 
 def parse(dictionary, arguments):
     """
@@ -35,7 +36,7 @@ def parse(dictionary, arguments):
         """
         pos = entry.definition.find("</k>")
         if pos > -1:
-            entry.definition = entry.definition[pos+len("</k>"):].strip()
+            entry.definition = entry.definition[(pos + len("</k>")):].strip()
 
     def custom_merge_function(headword, definitions):
         """
@@ -49,7 +50,7 @@ def parse(dictionary, arguments):
         if len(definitions) > 1:
             clean = u"<b>%s<b>" % (headword)
             for i in range(len(definitions)):
-                clean += "<f>&nbsp;&ns;&nbsp;</f><b>(%d)</b>&nbsp;%s" % (i+1, definitions[i])
+                clean += "<f>&nbsp;&ns;&nbsp;</f><b>(%d)</b>&nbsp;%s" % ((i + 1), definitions[i])
             return clean
         if len(definitions) == 1:
             return u"<b>%s<b><f>&nbsp;&ns;&nbsp;</f>%s" % (headword, definitions[0])
@@ -61,6 +62,3 @@ def parse(dictionary, arguments):
         clean_definition(entry)
     dictionary.merge_definitions(merge_function=custom_merge_function)
     return dictionary
-
-
-

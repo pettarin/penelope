@@ -8,7 +8,6 @@ It creates a .opf and .html file, and invokes kindlegen to compile it.
 """
 
 from __future__ import absolute_import
-from io import open
 import os
 import subprocess
 
@@ -23,15 +22,17 @@ from penelope.utilities import delete_directory
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
 KINDLEGEN = u"kindlegen"
 
+
 def read(dictionary, args, input_file_paths):
     print_error("Read function not implemented for MOBI dictionaries")
     return None
+
 
 def write(dictionary, args, output_file_path):
     # result to be returned
@@ -116,6 +117,3 @@ def write(dictionary, args, output_file_path):
         print_debug("Deleted temp dir '%s'" % (tmp_path), args.debug)
 
     return result
-
-
-

@@ -8,8 +8,8 @@ To write a StarDict file, the dictzip executable is required.
 """
 
 from __future__ import absolute_import
-from io import open
 import gzip
+import io
 import os
 import subprocess
 import struct
@@ -24,23 +24,24 @@ from penelope.utilities import print_info
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
 DICTZIP = u"dictzip"
 
 SAMETYPESEQUENCE_SUPPORTED_VALUES = [
-    u"m", # pure text
-    u"l", # pure text (locale encoding instead of UTF-8, use --input-file-encoding to specify it)
-    u"g", # Pango markup
-    u"t", # English phonetic
-    u"x", # XDXF markup
-    u"y", # Chinese YinBiao or Japanese KANA
-    u"k", # KingSoft PowerWord markup
-    u"w", # MediaWiki markup
-    u"h"  # HTML markup
-]         # all the above are UTF-8 encoded (except "l") and terminated by \0
+    u"m",   # pure text
+    u"l",   # pure text (locale encoding instead of UTF-8, use --input-file-encoding to specify it)
+    u"g",   # Pango markup
+    u"t",   # English phonetic
+    u"x",   # XDXF markup
+    u"y",   # Chinese YinBiao or Japanese KANA
+    u"k",   # KingSoft PowerWord markup
+    u"w",   # MediaWiki markup
+    u"h"    # HTML markup
+]           # all the above are UTF-8 encoded (except "l") and terminated by \0
+
 
 def read(dictionary, args, input_file_paths):
     def find_files(entries):
@@ -49,7 +50,7 @@ def read(dictionary, args, input_file_paths):
             if entry.endswith(".ifo"):
                 found["d.ifo"] = entry
                 break
-        if not "d.ifo" in found:
+        if "d.ifo" not in found:
             print_error("Cannot find .ifo file in the given StarDict file (see StarDict spec)")
             return {}
         # remove .ifo extension
@@ -84,7 +85,7 @@ def read(dictionary, args, input_file_paths):
 
     def uncompress_file(compressed_path, tmp_path, key):
         uncompressed_path = os.path.join(tmp_path, key)
-        u_obj = open(uncompressed_path, "wb")
+        u_obj = io.open(uncompressed_path, "wb")
         c_obj = gzip.open(compressed_path, "rb")
         u_obj.write(c_obj.read())
         c_obj.close()
@@ -94,9 +95,9 @@ def read(dictionary, args, input_file_paths):
 
     def read_ifo(ifo_path, has_syn, args):
         ifo_dict = {}
-        ifo_obj = open(ifo_path, "rb")
-        ifo_bytes = ifo_obj.read() # bytes
-        ifo_unicode = ifo_bytes.decode("utf-8") # unicode, always utf-8 by spec
+        ifo_obj = io.open(ifo_path, "rb")
+        ifo_bytes = ifo_obj.read()                  # bytes
+        ifo_unicode = ifo_bytes.decode("utf-8")     # unicode, always utf-8 by spec
         ifo_obj.close()
         for line in ifo_unicode.splitlines():
             array = line.split("=")
@@ -104,8 +105,8 @@ def read(dictionary, args, input_file_paths):
                 key = array[0]
                 val = "=".join(array[1:])
                 ifo_dict[key] = val
-        
-        if not "version" in ifo_dict:
+
+        if "version" not in ifo_dict:
             print_error("No 'version' found in the .ifo file (see StarDict spec)")
             return None
         if ifo_dict["version"] not in ["2.4.2", "3.0.0"]:
@@ -116,10 +117,10 @@ def read(dictionary, args, input_file_paths):
         if has_syn:
             required_keys.append("synwordcount")
         # TODO not used => disabling this
-        #if ifo_dict["version"] == "3.0.0":
-        #    required_keys.append("idxoffsetbits")
+        # if ifo_dict["version"] == "3.0.0":
+        #     required_keys.append("idxoffsetbits")
         for key in required_keys:
-            if not key in ifo_dict:
+            if key not in ifo_dict:
                 print_error("No '%s' found in the .ifo file (see StarDict spec)" % key)
                 return None
 
@@ -128,14 +129,14 @@ def read(dictionary, args, input_file_paths):
         if has_syn:
             ifo_dict["synwordcount"] = int(ifo_dict["synwordcount"])
         # TODO not used => disabling this
-        #if ifo_dict["version"] == "3.0.0":
-        #    ifo_dict["idxoffsetbits"] = int(ifo_dict["idxoffsetbits"])
+        # if ifo_dict["version"] == "3.0.0":
+        #     ifo_dict["idxoffsetbits"] = int(ifo_dict["idxoffsetbits"])
 
         if args.sd_ignore_sametypesequence:
             print_debug("Ignoring sametypesequence value", args.debug)
         else:
             # TODO limitation: we require sametypesequence to be present
-            if not "sametypesequence" in ifo_dict:
+            if "sametypesequence" not in ifo_dict:
                 print_error("The .ifo file must have a 'sametypesequence' value (see README).")
                 return None
             # TODO limitation: we require sametypesequence to have a value in SAMETYPESEQUENCE_SUPPORTED_VALUES
@@ -162,7 +163,7 @@ def read(dictionary, args, input_file_paths):
             for key in found_files:
                 entry = found_files[key]
                 ext_file_path = os.path.join(tmp_path, key)
-                ext_file_obj = open(ext_file_path, "wb")
+                ext_file_obj = io.open(ext_file_path, "wb")
                 zip_entry = input_file_obj.open(entry)
                 ext_file_obj.write(zip_entry.read())
                 zip_entry.close()
@@ -187,12 +188,12 @@ def read(dictionary, args, input_file_paths):
         print_debug("Read .ifo file with values:\n%s" % (str(ifo_dict)), args.debug)
 
         # read dict file
-        dict_file_obj = open(extracted_files["d.dict"], "rb")
+        dict_file_obj = io.open(extracted_files["d.dict"], "rb")
         dict_file_bytes = dict_file_obj.read()
         dict_file_obj.close()
 
         # read idx file
-        idx_file_obj = open(extracted_files["d.idx"], "rb")
+        idx_file_obj = io.open(extracted_files["d.idx"], "rb")
         byte_read = idx_file_obj.read(1)
         headword = b""
         while byte_read:
@@ -202,7 +203,7 @@ def read(dictionary, args, input_file_paths):
                 offset_int = int((struct.unpack('>i', offset_bytes))[0])
                 size_bytes = idx_file_obj.read(4)
                 size_int = int((struct.unpack('>i', size_bytes))[0])
-                definition = dict_file_bytes[offset_int:offset_int+size_int].decode(args.input_file_encoding)
+                definition = dict_file_bytes[offset_int:(offset_int + size_int)].decode(args.input_file_encoding)
                 headword = headword.decode("utf-8")
                 if args.ignore_case:
                     headword = headword.lower()
@@ -219,7 +220,7 @@ def read(dictionary, args, input_file_paths):
         if has_syn:
             print_debug("The input StarDict file contains a .syn file, parsing it...", args.debug)
             result = False
-            syn_file_obj = open(extracted_files["d.syn"], "rb")
+            syn_file_obj = io.open(extracted_files["d.syn"], "rb")
             byte_read = syn_file_obj.read(1)
             synonym = b""
             while byte_read:
@@ -263,6 +264,7 @@ def read(dictionary, args, input_file_paths):
             return None
     return dictionary
 
+
 def write(dictionary, args, output_file_path):
     # result to be returned
     result = None
@@ -295,7 +297,7 @@ def write(dictionary, args, output_file_path):
     # gint g_ascii_strcasecmp (const gchar *s1, const gchar *s2);
     # Compare two strings, ignoring the case of ASCII characters.
     # Unlike the BSD strcasecmp() function, this only recognizes standard ASCII letters and ignores the locale, treating all non-ASCII bytes as if they are not letters.
-    # This function should be used only on strings that are known to be in encodings where the bytes corresponding to ASCII letters always represent themselves. This includes UTF-8 and the ISO-8859-* charsets, but not for instance double-byte encodings like the Windows Codepage 932, where the trailing bytes of double-byte characters include all ASCII letters. If you compare two CP932 strings using this function, you will get false matches. 
+    # This function should be used only on strings that are known to be in encodings where the bytes corresponding to ASCII letters always represent themselves. This includes UTF-8 and the ISO-8859-* charsets, but not for instance double-byte encodings like the Windows Codepage 932, where the trailing bytes of double-byte characters include all ASCII letters. If you compare two CP932 strings using this function, you will get false matches.
     #
     # using Python's builtin lower() and sort() by headword
     # should be equivalent for UTF-8 encoded dictionaries (and it is fast)
@@ -304,8 +306,8 @@ def write(dictionary, args, output_file_path):
 
     # write .idx and .dict files
     print_debug("Writing .idx and .dict files...", args.debug)
-    idx_file_obj = open(idx_file_path, "wb")
-    dict_file_obj = open(dict_file_path, "wb")
+    idx_file_obj = io.open(idx_file_path, "wb")
+    dict_file_obj = io.open(dict_file_path, "wb")
     current_offset = 0
     current_idx_size = 0
     for entry_index in dictionary.entries_index_sorted:
@@ -338,7 +340,7 @@ def write(dictionary, args, output_file_path):
             print_debug("Dictionary has synonyms, but ignoring them", args.debug)
         else:
             print_debug("Dictionary has synonyms, writing .syn file...", args.debug)
-            syn_file_obj = open(syn_file_path, "wb")
+            syn_file_obj = io.open(syn_file_path, "wb")
             dict_syns = dictionary.get_synonyms()
             dict_syns_len = len(dict_syns)
             for pair in dict_syns:
@@ -355,7 +357,7 @@ def write(dictionary, args, output_file_path):
     if args.sd_no_dictzip:
         print_debug("Not compressing .dict file with dictzip", args.debug)
         files_to_compress.append(dict_file_path)
-        result = [dict_file_path] 
+        result = [dict_file_path]
     else:
         try:
             print_debug("Compressing .dict file with dictzip...", args.debug)
@@ -372,7 +374,7 @@ def write(dictionary, args, output_file_path):
                 stderr=subprocess.PIPE
             )
             proc.communicate()
-            result = [dict_dz_file_path] 
+            result = [dict_dz_file_path]
             files_to_compress.append(dict_dz_file_path)
             print_debug("Compressing .dict file with dictzip... done", args.debug)
         except OSError as exc:
@@ -381,11 +383,11 @@ def write(dictionary, args, output_file_path):
             print_error("    1. is available on your $PATH or")
             print_error("    2. specify its path with --dictzip-path or")
             print_error("    3. specify --no-dictzip to avoid compressing the .dict file")
-            result = None 
+            result = None
 
     if result is not None:
         # create ifo file
-        ifo_file_obj = open(ifo_file_path, "wb")
+        ifo_file_obj = io.open(ifo_file_path, "wb")
         ifo_file_obj.write((u"StarDict's dict ifo file\n").encode("utf-8"))
         ifo_file_obj.write((u"version=2.4.2\n").encode("utf-8"))
         ifo_file_obj.write((u"wordcount=%d\n" % (len(dictionary))).encode("utf-8"))
@@ -424,6 +426,3 @@ def write(dictionary, args, output_file_path):
         print_debug("Deleted temp dir '%s'" % (tmp_path), args.debug)
 
     return result
-
-
-

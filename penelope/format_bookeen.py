@@ -6,8 +6,8 @@ Read/write Bookeen dictionaries.
 """
 
 from __future__ import absolute_import
-from io import open
 import imp
+import io
 import os
 import sqlite3
 import zipfile
@@ -23,14 +23,15 @@ from penelope.utilities import delete_directory
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
 CHUNK_FILE_PREFIX = "c_"
-CHUNK_SIZE = 262144 # 2^18
+CHUNK_SIZE = 262144     # 262144 = 2^18
 EMPTY_FILE_PATH = os.path.join(os.path.split(os.path.abspath(__file__))[0], "res/empty.idx")
 HEADER = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\" [<!ENTITY ns \"&#8226;\">]><html xml:lang=\"%s\" xmlns=\"http://www.w3.org/1999/xhtml\"><head><title></title></head><body>"
+
 
 def read(dictionary, args, input_file_string):
     def read_single_dict(dictionary, args, single_dict):
@@ -47,13 +48,13 @@ def read(dictionary, args, input_file_string):
             for entry in zip_file_obj.namelist():
                 if entry.endswith(".dict.idx"):
                     zip_entry = zip_file_obj.open(entry)
-                    idx_file_obj = open(idx_file_path, "wb")
+                    idx_file_obj = io.open(idx_file_path, "wb")
                     idx_file_obj.write(zip_entry.read())
                     idx_file_obj.close()
                     zip_entry.close()
                 elif entry.endswith(".dict"):
                     zip_entry = zip_file_obj.open(entry)
-                    dict_file_obj = open(dict_file_path, "wb")
+                    dict_file_obj = io.open(dict_file_path, "wb")
                     dict_file_obj.write(zip_entry.read())
                     dict_file_obj.close()
                     zip_entry.close()
@@ -76,7 +77,7 @@ def read(dictionary, args, input_file_string):
             if not entry.endswith("/"):
                 zip_entry = zip_file_obj.open(entry)
                 entry_file_path = os.path.join(tmp_path, os.path.basename(entry))
-                entry_file_obj = open(entry_file_path, "wb")
+                entry_file_obj = io.open(entry_file_path, "wb")
                 entry_file_obj.write(zip_entry.read())
                 entry_file_obj.close()
                 zip_entry.close()
@@ -98,7 +99,7 @@ def read(dictionary, args, input_file_string):
             offset = index_entry[2]
             size = index_entry[3]
             chunk_index = index_entry[4]
-            if not chunk_index in chunk_index_to_entries:
+            if chunk_index not in chunk_index_to_entries:
                 chunk_index_to_entries[chunk_index] = []
             if chunk_index > max_chunk_index:
                 max_chunk_index = chunk_index
@@ -112,7 +113,7 @@ def read(dictionary, args, input_file_string):
         for chunk_index in range(1, max_chunk_index + 1):
             print_debug("  Reading c_%d file..." % (chunk_index), args.debug)
             chunk_file_path = os.path.join(tmp_path, "%s%d" % (CHUNK_FILE_PREFIX, chunk_index))
-            chunk_file_obj = open(chunk_file_path, "rb")
+            chunk_file_obj = io.open(chunk_file_path, "rb")
             for entry in chunk_index_to_entries[chunk_index]:
                 headword = entry[0]
                 offset = entry[1]
@@ -131,7 +132,7 @@ def read(dictionary, args, input_file_string):
         else:
             delete_directory(tmp_path)
             print_debug("Deleted temp dir '%s'" % (tmp_path), args.debug)
-        return True 
+        return True
 
     single_dicts = []
     for prefix in input_file_string.split(","):
@@ -147,7 +148,7 @@ def read(dictionary, args, input_file_string):
             tentative_idx_path = tentative_dict_path + u".idx"
             if (os.path.exists(tentative_idx_path)) and (os.path.exists(tentative_dict_path)):
                 single_dicts.append([tentative_idx_path, tentative_dict_path])
-    
+
     if len(single_dicts) == 0:
         print_error("Cannot find .install or .dict.idx/.dict files")
         return None
@@ -162,6 +163,7 @@ def read(dictionary, args, input_file_string):
             return None
     return dictionary
 
+
 def write(dictionary, args, output_file_path):
     # result to be returned
     result = None
@@ -169,7 +171,7 @@ def write(dictionary, args, output_file_path):
     # get absolute path
     output_file_path_absolute = os.path.abspath(output_file_path)
 
-    # get absolute path for collation function file 
+    # get absolute path for collation function file
     bookeen_collation_function_path = None
     if args.bookeen_collation_function is not None:
         bookeen_collation_function_path = os.path.abspath(args.bookeen_collation_function)
@@ -216,7 +218,7 @@ def write(dictionary, args, output_file_path):
     chunk_index = 1
     chunk_file_path = "%s%d" % (CHUNK_FILE_PREFIX, chunk_index)
     files_to_compress.append(chunk_file_path)
-    chunk_file_obj = open(chunk_file_path, "wb")
+    chunk_file_obj = io.open(chunk_file_path, "wb")
     for entry_index in dictionary.entries_index_sorted:
         entry = dictionary.entries[entry_index]
         definition_bytes = entry.definition.encode("utf-8")
@@ -238,7 +240,7 @@ def write(dictionary, args, output_file_path):
             chunk_index += 1
             chunk_file_path = "%s%d" % (CHUNK_FILE_PREFIX, chunk_index)
             files_to_compress.append(chunk_file_path)
-            chunk_file_obj = open(chunk_file_path, "wb")
+            chunk_file_obj = io.open(chunk_file_path, "wb")
             current_offset = 0
     chunk_file_obj.close()
     print_debug("Writing c_* files... done", args.debug)
@@ -263,7 +265,7 @@ def write(dictionary, args, output_file_path):
     sql_cursor.execute("update T_DictInfo set F_Title=?", (args.title,))
     sql_cursor.execute("update T_DictInfo set F_Description=?", (args.description,))
     sql_cursor.execute("update T_DictInfo set F_Year=?", (args.year,))
-    # the meaning of the following is unknown 
+    # the meaning of the following is unknown
     sql_cursor.execute("update T_DictInfo set F_Alphabet=?", ("Z",))
     sql_cursor.execute("update T_DictInfo set F_CollationLevel=?", ("1",))
     sql_cursor.execute("update T_DictVersion set F_DictType=?", ("stardict",))
@@ -305,6 +307,3 @@ def write(dictionary, args, output_file_path):
         print_debug("Deleted temp dir '%s'" % (tmp_path), args.debug)
 
     return result
-
-
-

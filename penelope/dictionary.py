@@ -15,7 +15,6 @@ one for each synonym, with the definition of the original entry).
 """
 
 from __future__ import absolute_import
-from io import open
 import imp
 import os
 
@@ -26,9 +25,10 @@ from penelope.utilities import print_error
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
+
 
 def read_dictionary(args):
     """
@@ -86,6 +86,7 @@ def read_dictionary(args):
         return penelope.format_xml.read(dictionary, args, input_file_paths)
     return dictionary
 
+
 def write_dictionary(dictionary, args):
     """
     Write the dictionary to file.
@@ -127,6 +128,7 @@ def write_dictionary(dictionary, args):
         return penelope.format_xml.write(dictionary, args, output_file_path)
     return False
 
+
 def get_kobo_file_path(args):
     if (args.language_from == args.language_to) and (args.language_from == "en"):
         output_file_name = "dicthtml.zip"
@@ -139,10 +141,12 @@ def get_kobo_file_path(args):
     output_file_path = os.path.join(output_file_path, output_file_name)
     return output_file_path
 
+
 def add_extension(file_path, extension):
     if not file_path.endswith(extension):
         file_path += extension
     return file_path
+
 
 def prepare_file_paths(string, extension):
     file_paths = []
@@ -153,7 +157,6 @@ def prepare_file_paths(string, extension):
             return None
         file_paths.append(file_path)
     return file_paths
-
 
 
 class DictionaryEntry(object):
@@ -189,6 +192,7 @@ class DictionaryEntry(object):
         if len(self) < prefix_length:
             return self.headword
         return self.headword[0:prefix_length]
+
 
 class DictionaryMetadata(object):
     def __init__(
@@ -232,18 +236,17 @@ class DictionaryMetadata(object):
     Email:         '%s'
     Website:       '%s'
     Description:   '%s'""" % (
-        self.identifier_string,
-        self.language_from,
-        self.language_to,
-        self.title_string,
-        self.author_string,
-        self.copyright_string,
-        self.license_string,
-        self.year_string,
-        self.email_string,
-        self.website_string,
-        self.description_string
-    )
+            self.identifier_string,
+            self.language_from,
+            self.language_to,
+            self.title_string,
+            self.author_string,
+            self.copyright_string,
+            self.license_string,
+            self.year_string,
+            self.email_string,
+            self.website_string,
+            self.description_string)
 
     @property
     def is_monolingual(self):
@@ -256,6 +259,7 @@ class DictionaryMetadata(object):
         if self.language_from is None:
             return False
         return self.language_from != self.language_to
+
 
 class Dictionary(object):
     def __init__(
@@ -308,7 +312,7 @@ Has synonyms:               %s
         if entry is None:
             entry = DictionaryEntry(headword, definition)
         self.entries.append(entry)
-        if not entry.headword in self.entries_index:
+        if entry.headword not in self.entries_index:
             self.entries_index[entry.headword] = []
         index = len(self.entries) - 1
         self.entries_index[entry.headword].append(index)
@@ -425,7 +429,7 @@ Has synonyms:               %s
                     self.add_synonym(synonym=synonym, headword_index=new_headword_index)
 
         # not needed, since we called self.clear()
-        #self.sort(False, False, False, False)
+        # self.sort(False, False, False, False)
 
     def group(
             self,
@@ -487,7 +491,7 @@ Has synonyms:               %s
         for index in self.entries_index_sorted:
             entry = self.entries[index]
             prefix = get_prefix(entry.headword, prefix_length)
-            if not prefix in raw_groups:
+            if prefix not in raw_groups:
                 raw_groups[prefix] = []
             raw_groups[prefix].append(self.entries[index])
 
@@ -508,7 +512,7 @@ Has synonyms:               %s
             if (
                     (len(accumulator) >= merge_min_size) or
                     ((not merge_across_first) and (key[0] != accumulator_key[0]))
-                ):
+            ):
                 merged_groups[accumulator_key] = accumulator
                 accumulator_key = key
                 accumulator = raw_groups[accumulator_key]
@@ -516,6 +520,3 @@ Has synonyms:               %s
                 accumulator += raw_groups[key]
         merged_groups[accumulator_key] = accumulator
         return return_triple(merged_groups)
-
-
-

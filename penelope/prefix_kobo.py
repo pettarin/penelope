@@ -8,9 +8,10 @@ This is the prefix function for grouping headwords for Kobo format.
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
+
 
 def get_prefix(headword, length):
     """
@@ -55,6 +56,3 @@ def get_prefix(headword, length):
         if is_ok:
             prefix = headword[0:length]
     return prefix
-
-
-

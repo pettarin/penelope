@@ -2,14 +2,15 @@
 *.pyd
 *.pyo
 *.swp
-penelope.egg-info
-penelope/build
-penelope/__pycache__
 bak
 build
 dist
 docs/build
+penelope.egg-info
+penelope/__pycache__
+penelope/build
 tmp
+venvs
 
 # service scripts
 zzz_*.py

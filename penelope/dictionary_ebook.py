@@ -8,7 +8,7 @@ in EPUB 2 and MOBI format.
 
 from __future__ import absolute_import
 from __future__ import print_function
-from io import open
+import io
 import os
 import zipfile
 
@@ -18,9 +18,10 @@ from penelope.utilities import delete_directory
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
+
 
 class DictionaryEbook():
     """
@@ -37,7 +38,7 @@ class DictionaryEbook():
 
     EPUB2 = u"epub2"
 
-    #EPUB3 = u"epub3"
+    # EPUB3 = u"epub3"
 
     MOBI = u"mobi"
 
@@ -55,7 +56,7 @@ class DictionaryEbook():
     EPUB_CSS_CONTENTS = u"""@charset "UTF-8";
 body {
   margin: 10px 25px 10px 25px;
-}  
+}
 h1 {
   font-size: 200%;
 }
@@ -275,7 +276,7 @@ p.groupDefinition {
 
     def add_file(self, relative_path, contents, mode=zipfile.ZIP_DEFLATED):
         file_path = os.path.join(self.root_directory_path, relative_path)
-        file_obj = open(file_path, "wb")
+        file_obj = io.open(file_path, "wb")
         try:
             # Python 2
             if isinstance(contents, unicode):
@@ -295,7 +296,7 @@ p.groupDefinition {
         if cover_path_absolute is not None:
             try:
                 basename = os.path.basename(cover_path_absolute)
-                cover_obj = open(cover_path_absolute, "rb")
+                cover_obj = io.open(cover_path_absolute, "rb")
                 cover = cover_obj.read()
                 cover_obj.close()
                 b = basename.lower()
@@ -316,7 +317,7 @@ p.groupDefinition {
             css = self.EPUB_CSS_CONTENTS
         if custom_css_path_absolute is not None:
             try:
-                css_obj = open(custom_css_path_absolute, "rb")
+                css_obj = io.open(custom_css_path_absolute, "rb")
                 css = css_obj.read()
                 css_obj.close()
             except:
@@ -377,7 +378,7 @@ p.groupDefinition {
                 group_contents = word_definition_joiner.join(group_contents)
             group_contents = group_template % (group_label, group_label, previous_link, index_link, next_link, group_contents)
             self.add_file_manifest(u"OEBPS/%s" % group_xhtml_path, group_xhtml_path, group_contents, u"application/xhtml+xml")
-            index += 1 
+            index += 1
 
     def escape_if_needed(self, string):
         def html_escape(s):
@@ -467,7 +468,7 @@ p.groupDefinition {
         ncx_contents = self.NCX_TEMPLATE % (self.args.identifier, self.args.title, ncx_items)
         self.add_file_manifest(u"OEBPS/toc.ncx", u"toc.ncx", ncx_contents, u"application/x-dtbncx+xml")
 
-    def write(self, file_path_absolute, compress=True): 
+    def write(self, file_path_absolute, compress=True):
         # get cover path
         cover_path_absolute = self.args.cover_path
         if cover_path_absolute is not None:
@@ -486,7 +487,7 @@ p.groupDefinition {
         os.makedirs(u"OEBPS")
 
         # add mimetype and container.xml
-        if self.ebook_format in [self.EPUB2]: # add EPUB3 here
+        if self.ebook_format in [self.EPUB2]:   # add EPUB3 here
             self.add_file(u"mimetype", self.MIMETYPE_CONTENTS, mode=zipfile.ZIP_STORED)
             self.add_file(u"META-INF/container.xml", self.CONTAINER_XML_CONTENTS)
 
@@ -504,13 +505,13 @@ p.groupDefinition {
         self.write_groups()
 
         # write ncx
-        if self.ebook_format in [self.EPUB2]: # add EPUB3 here
+        if self.ebook_format in [self.EPUB2]:   # add EPUB3 here
             self.write_ncx()
 
         # write opf
         self.write_opf()
 
-        # compress 
+        # compress
         if compress:
             output_file_obj = zipfile.ZipFile(file_path_absolute, "w", compression=zipfile.ZIP_DEFLATED)
             for file_to_compress in self.files:
@@ -519,5 +520,3 @@ p.groupDefinition {
 
         # return to previous cwd
         os.chdir(cwd)
-
-

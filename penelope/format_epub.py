@@ -8,11 +8,11 @@ NOTE: this file needs refactoring.
 """
 
 from __future__ import absolute_import
-from io import open
+import io
 import os
 import zipfile
 
-from penelope.dictionary_ebook import DictionaryEbook 
+from penelope.dictionary_ebook import DictionaryEbook
 from penelope.utilities import create_temp_directory
 from penelope.utilities import delete_directory
 from penelope.utilities import print_debug
@@ -22,13 +22,15 @@ from penelope.utilities import print_info
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
+
 
 def read(dictionary, args, input_file_paths):
     print_error("Read function not implemented for EPUB dictionaries")
     return None
+
 
 def write(dictionary, args, output_file_path):
     # result to be returned
@@ -53,7 +55,7 @@ def write(dictionary, args, output_file_path):
 
     # create epub object
     epub = DictionaryEbook(ebook_format=DictionaryEbook.EPUB2, args=args)
-   
+
     # add groups
     for key in all_group_keys:
         if key == u"SPECIAL":
@@ -86,6 +88,3 @@ def write(dictionary, args, output_file_path):
         print_debug("Deleted temp dir '%s'" % (tmp_path), args.debug)
 
     return result
-
-
-

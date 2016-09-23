@@ -4,8 +4,8 @@ Penelope
 **Penelope** is a multi-tool for creating, editing and converting
 dictionaries, especially for eReader devices.
 
--  Version: 3.1.2
--  Date: 2016-02-16
+-  Version: 3.1.3
+-  Date: 2016-09-23
 -  Developer: `Alberto Pettarin <http://www.albertopettarin.it/>`__
 -  License: the MIT License (MIT)
 -  Contact: `click here <http://www.albertopettarin.it/contact.html>`__
@@ -31,14 +31,20 @@ With the current version you can:
    lack of a search function of your eReader)
 -  output a MOBI (Kindle) dictionary
 
-Important updates
-~~~~~~~~~~~~~~~~~
+Important Update
+~~~~~~~~~~~~~~~~
 
--  2015-11-24 Penelope is now available on
-   `PyPI <https://pypi.python.org/pypi/penelope/>`__, bumped version to
-   **3.0.1**
--  2015-11-22 **The command line interface has changed with v3.0.0**, as
-   I performed a huge code refactoring.
+-  2016-04-17 Sadly, I can no longer afford to spend time working on
+   Penelope, as my other FLOSS projects take 100% of my FLOSS time, and
+   I still need to pay rent and bills, spend time with family and
+   friends, etc., as anyone else. Therefore, I will not work on issues
+   or pull requests, **please do not expect they will be dealt with at
+   all**. I am actively **looking for other developers to take this
+   project over**. (This notice should be removed when the changeover
+   happens.) If you need to convert a dictionary and the current version
+   of Penelope does not work for you, you might want to have a look at
+   `**PyGlossary** <https://github.com/ilius/pyglossary>`__. My most
+   sincere apologies for the inconvenience.
 
 Installation
 ------------

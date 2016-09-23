@@ -6,8 +6,8 @@ Read/write XML dictionaries.
 """
 
 from __future__ import absolute_import
-from io import open
 from lxml import etree
+import io
 
 from penelope.utilities import print_debug
 from penelope.utilities import print_error
@@ -15,15 +15,16 @@ from penelope.utilities import print_error
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
+
 
 def read(dictionary, args, input_file_paths):
     for input_file_path in input_file_paths:
         print_debug("Reading from file '%s'..." % (input_file_path), args.debug)
-        input_file_object = open(input_file_path, "rb")
-        data_bytes = input_file_object.read() # bytes
+        input_file_object = io.open(input_file_path, "rb")
+        data_bytes = input_file_object.read()   # bytes
         input_file_object.close()
         root = etree.fromstring(data_bytes)
         for entry in root.iter("entry"):
@@ -34,10 +35,11 @@ def read(dictionary, args, input_file_paths):
                     headword = child.text
                 if child.tag == "def":
                     definition = child.text
-            if (headword is not None) and (definition is not None):    
+            if (headword is not None) and (definition is not None):
                 dictionary.add_entry(headword=headword, definition=definition)
         print_debug("Reading from file '%s'... success" % (input_file_path), args.debug)
     return dictionary
+
 
 def write(dictionary, args, output_file_path):
     try:
@@ -63,6 +65,3 @@ def write(dictionary, args, output_file_path):
     except:
         print_error("Writing to file '%s'... failure" % (output_file_path))
         return None
-
-
-

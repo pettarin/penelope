@@ -19,9 +19,9 @@ as executables in your $PATH.
 """
 
 from __future__ import absolute_import
-from io import open
-import imp
 import gzip
+import imp
+import io
 import os
 import subprocess
 import zipfile
@@ -39,13 +39,14 @@ from penelope.utilities import rename_file
 __author__ = "Alberto Pettarin"
 __copyright__ = "Copyright 2012-2016, Alberto Pettarin (www.albertopettarin.it)"
 __license__ = "MIT"
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 __email__ = "alberto@albertopettarin.it"
 __status__ = "Production"
 
 WORDS_FILE_NAME = u"words"
 MARISA_BUILD = u"marisa-build"
 MARISA_REVERSE_LOOKUP = u"marisa-reverse-lookup"
+
 
 def read(dictionary, args, input_file_paths):
     def read_single_file(dictionary, args, input_file_path):
@@ -57,7 +58,7 @@ def read(dictionary, args, input_file_paths):
 
         # copy the index file from the zip to the tmp file
         input_file_obj = zipfile.ZipFile(input_file_path)
-        tmp_file_obj = open(tmp_path, "wb")
+        tmp_file_obj = io.open(tmp_path, "wb")
         tmp_file_obj.write(input_file_obj.read(WORDS_FILE_NAME))
         tmp_file_obj.close()
         input_file_obj.close()
@@ -83,7 +84,7 @@ def read(dictionary, args, input_file_paths):
                 print_info("  Running '%s' from '%s'" % (MARISA_REVERSE_LOOKUP, args.marisa_bin_path))
             # TODO this is ugly, but it works
             query = (u"\n".join([str(x) for x in range(int(args.marisa_index_size))]) + u"\n").encode("utf-8")
-            
+
             try:
                 proc = subprocess.Popen(
                     [marisa_reverse_lookup_path, tmp_path],
@@ -123,6 +124,7 @@ def read(dictionary, args, input_file_paths):
             return None
     return dictionary
 
+
 def write(dictionary, args, output_file_path):
     # result to be returned
     result = None
@@ -157,7 +159,7 @@ def write(dictionary, args, output_file_path):
     for key in group_keys:
         # write html file
         file_html_path = key + u".html"
-        file_html_obj = open(file_html_path, "wb")
+        file_html_obj = io.open(file_html_path, "wb")
         file_html_obj.write(u"<?xml version=\"1.0\" encoding=\"utf-8\"?><html>".encode("utf-8"))
         for entry in group_dict[key]:
             headword = entry.headword
@@ -167,7 +169,7 @@ def write(dictionary, args, output_file_path):
         file_html_obj.close()
 
         # compress in gz format
-        file_html_obj = open(file_html_path, "rb")
+        file_html_obj = io.open(file_html_path, "rb")
         file_gz_path = file_html_path + u".gz"
         file_gz_obj = gzip.open(file_gz_path, "wb")
         file_gz_obj.writelines(file_html_obj)
@@ -187,7 +189,7 @@ def write(dictionary, args, output_file_path):
         import marisa_trie
         trie = marisa_trie.Trie(keys)
         trie.save(file_words_path)
-        result = [file_words_path] 
+        result = [file_words_path]
     except ImportError as exc:
         # call MARISA with subprocess
         print_info("  MARISA cannot be imported as Python module. You might want to install it with:")
@@ -209,14 +211,14 @@ def write(dictionary, args, output_file_path):
                 stderr=subprocess.PIPE
             )
             proc.communicate(input=query)[0].decode("utf-8")
-            result = [file_words_path] 
+            result = [file_words_path]
         except OSError as exc:
             print_error("  Unable to run '%s' as '%s'" % (MARISA_BUILD, marisa_build_path))
             print_error("  Please make sure '%s':" % MARISA_BUILD)
             print_error("    1. is available on your $PATH or")
             print_error("    2. specify its path with --marisa-bin-path or")
             print_error("    3. install the marisa_trie Python module")
-            result = None 
+            result = None
 
     if result is not None:
         # add file_words_path to files to compress
@@ -243,6 +245,3 @@ def write(dictionary, args, output_file_path):
         print_debug("Deleted temp dir '%s'" % (tmp_path), args.debug)
 
     return result
-
-
-
